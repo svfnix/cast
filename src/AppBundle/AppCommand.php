@@ -14,7 +14,6 @@ class AppCommand extends ContainerAwareCommand
     protected function showImage($content)
     {
         $clr_txt  = '1;37m';
-        $clr_shadow = '0;31m';
         $clr_bg   = '0;30m';
 
         $img = @imagecreatefromstring ($content);

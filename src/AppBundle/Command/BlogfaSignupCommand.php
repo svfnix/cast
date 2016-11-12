@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\AppCommand;
+use AppBundle\Entity\Account;
 use AppBundle\Entity\Capcha;
 use Goutte\Client;
 use Symfony\Component\Console\Input\InputInterface;
@@ -42,6 +43,7 @@ class BlogfaSignupCommand extends AppCommand
             $output->writeln(" - grab captcha");
             $client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
             $this->showImage($client->getResponse()->getContent());
+            file_put_contents('cap.jpeg', $client->getResponse()->getContent());
 
             $helper = $this->getHelper('question');
 
@@ -67,12 +69,18 @@ class BlogfaSignupCommand extends AppCommand
             $query->setMaxResults(1);
             $blog = $query->getSingleResult();
 
+            $blog->setUsed(true);
+            $em->merge($blog);
+            $em->flush();
+
             do{
                 $query = $em->createQuery("SELECT u FROM FakeUserPool u");
                 $query->setMaxResults(1);
                 $user = $query->getSingleResult();
 
-                $em->remove();
+                $user->setUsed(true);
+                $em->merge($user);
+                $em->flush();
 
                 $blog_username = $user->username;
 
@@ -80,7 +88,6 @@ class BlogfaSignupCommand extends AppCommand
                 $result = $client->getResponse()->getContent();
 
             } while($result != 'free');
-
 
             $blog_password = substr(md5($blog_username), 12, 8);
             $blog_email = $blog_username . '@yourinbox.ir';
@@ -97,8 +104,6 @@ class BlogfaSignupCommand extends AppCommand
             ]);
 
             $output->writeln(" - weblog created {$blog_username} : {$blog_password} <{$blog_username}.blogfa.com>");
-
-            file_put_contents('response.html', $crawler->html());
 
             $output->writeln(" - check mailbox");
 
@@ -133,13 +138,21 @@ class BlogfaSignupCommand extends AppCommand
             }
 
             $output->writeln(" - activating blog");
-            $crawler = $client->request('GET', $confirmation_link);
-            file_put_contents('confirmation.html', $crawler->html());
+            $client->request('GET', $confirmation_link);
+
+            $account = new Account();
+            $account->setService(self::service);
+            $account->setUsername($blog_username);
+            $account->setPassword($blog_password);
+            $account->setEmail($blog_email);
+
+            $em->persist($account);
+            $em->flush();
 
             $output->writeln("weblog successfully created.");
-            $question = new ConfirmationQuestion('Do you want to continue? (y/yes): ', 'y');
+            $question = new Question('Do you want to continue? (y/yes): ');
             $acceptance = $helper->ask($input, $output, $question);
-            if (!in_array(strtolower($acceptance), ['y', 'yes'])) {
+            if (!in_array(strtolower($acceptance), ['y', 'yes', null])) {
                 $continue = false;
             }
         }

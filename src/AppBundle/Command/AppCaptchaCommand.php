@@ -23,7 +23,7 @@ class AppCaptchaCommand extends AppCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $captcha = new Captcha(file_get_contents('captcha/3.jpeg'));
+        $captcha = new Captcha(file_get_contents('cap.jpeg'));
         $captcha->decode()->crop()->print_all();
         $numbers = $captcha->getCropped();
         $number = new Number($numbers[0]);

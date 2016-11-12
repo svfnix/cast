@@ -163,5 +163,21 @@ class FakeUserPool
     {
         return $this->email;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isUsed()
+    {
+        return $this->used;
+    }
+
+    /**
+     * @param boolean $used
+     */
+    public function setUsed($used)
+    {
+        $this->used = $used;
+    }
 }
 

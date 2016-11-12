@@ -44,6 +44,14 @@ class FakeBlogPool
 
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="used", type="boolean")
+     */
+    private $used;
+
+
+    /**
      * Get id
      *
      * @return int
@@ -123,6 +131,22 @@ class FakeBlogPool
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUsed()
+    {
+        return $this->used;
+    }
+
+    /**
+     * @param boolean $used
+     */
+    public function setUsed($used)
+    {
+        $this->used = $used;
     }
 }
 
