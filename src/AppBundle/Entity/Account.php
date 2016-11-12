@@ -49,6 +49,13 @@ class Account
      */
     private $email;
 
+    /**
+     * @var \Datetime
+     *
+     * @ORM\Column(name="last_update", type="datetime")
+     */
+    private $lastUpdate;
+
 
     /**
      * Get id
@@ -65,7 +72,7 @@ class Account
      *
      * @param string $service
      *
-     * @return ServiceAccount
+     * @return $this
      */
     public function setService($service)
     {
@@ -89,7 +96,7 @@ class Account
      *
      * @param string $username
      *
-     * @return ServiceAccount
+     * @return $this
      */
     public function setUsername($username)
     {
@@ -113,7 +120,7 @@ class Account
      *
      * @param string $password
      *
-     * @return ServiceAccount
+     * @return $this
      */
     public function setPassword($password)
     {
@@ -137,7 +144,7 @@ class Account
      *
      * @param string $email
      *
-     * @return ServiceAccount
+     * @return $this
      */
     public function setEmail($email)
     {
@@ -154,6 +161,25 @@ class Account
     public function getEmail()
     {
         return $this->password;
+    }
+
+    /**
+     * @return \Datetime
+     */
+    public function getLastUpdate()
+    {
+        return $this->lastUpdate;
+    }
+
+    /**
+     * @param \Datetime $lastUpdate
+     * @return $this
+     */
+    public function setLastUpdate($lastUpdate)
+    {
+        $this->lastUpdate = $lastUpdate;
+
+        return $this;
     }
 
 }

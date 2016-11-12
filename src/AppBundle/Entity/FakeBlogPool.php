@@ -66,7 +66,7 @@ class FakeBlogPool
      *
      * @param string $title
      *
-     * @return FakeBlogPool
+     * @return $this
      */
     public function setTitle($title)
     {
@@ -90,7 +90,7 @@ class FakeBlogPool
      *
      * @param text $description
      *
-     * @return FakeBlogPool
+     * @return $this
      */
     public function setDescription($description)
     {
@@ -114,7 +114,7 @@ class FakeBlogPool
      *
      * @param text $tags
      *
-     * @return FakeBlogPool
+     * @return $this
      */
     public function setTags($tags)
     {
@@ -143,6 +143,8 @@ class FakeBlogPool
 
     /**
      * @param boolean $used
+     *
+     * @return $this
      */
     public function setUsed($used)
     {

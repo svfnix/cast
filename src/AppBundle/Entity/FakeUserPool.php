@@ -73,7 +73,7 @@ class FakeUserPool
      *
      * @param string $username
      *
-     * @return FakeUserPool
+     * @return $this
      */
     public function setUsername($username)
     {
@@ -97,7 +97,7 @@ class FakeUserPool
      *
      * @param string $fname
      *
-     * @return FakeUserPool
+     * @return $this
      */
     public function setFname($fname)
     {
@@ -121,7 +121,7 @@ class FakeUserPool
      *
      * @param string $lname
      *
-     * @return FakeUserPool
+     * @return $this
      */
     public function setLname($lname)
     {
@@ -145,7 +145,7 @@ class FakeUserPool
      *
      * @param string $email
      *
-     * @return FakeUserPool
+     * @return $this
      */
     public function setEmail($email)
     {
@@ -174,6 +174,8 @@ class FakeUserPool
 
     /**
      * @param boolean $used
+     * 
+     * @return $this
      */
     public function setUsed($used)
     {

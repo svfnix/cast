@@ -5,6 +5,8 @@ namespace AppBundle\Command;
 use AppBundle\AppCommand;
 use AppBundle\Entity\Account;
 use AppBundle\Entity\Capcha;
+use AppBundle\Entity\FakeBlogPool;
+use AppBundle\Entity\FakeUserPool;
 use Goutte\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,7 +45,6 @@ class BlogfaSignupCommand extends AppCommand
             $output->writeln(" - grab captcha");
             $client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
             $this->showImage($client->getResponse()->getContent());
-            file_put_contents('cap.jpeg', $client->getResponse()->getContent());
 
             $helper = $this->getHelper('question');
 
@@ -65,7 +66,7 @@ class BlogfaSignupCommand extends AppCommand
 
             $output->writeln(" - registring");
 
-            $query = $em->createQuery("SELECT b FROM FakeBlogPool b");
+            $query = $em->createQuery("SELECT b FROM AppBundle:FakeBlogPool b WHERE b.used = 0");
             $query->setMaxResults(1);
             $blog = $query->getSingleResult();
 
@@ -74,7 +75,7 @@ class BlogfaSignupCommand extends AppCommand
             $em->flush();
 
             do{
-                $query = $em->createQuery("SELECT u FROM FakeUserPool u");
+                $query = $em->createQuery("SELECT u FROM AppBundle:FakeUserPool u WHERE u.used = 0");
                 $query->setMaxResults(1);
                 $user = $query->getSingleResult();
 
@@ -82,7 +83,7 @@ class BlogfaSignupCommand extends AppCommand
                 $em->merge($user);
                 $em->flush();
 
-                $blog_username = $user->username;
+                $blog_username = $user->getUsername();
 
                 $client->request('GET', 'http://blogfa.com/checkuser.ashx?u=' . $blog_username . '&rnd=0.' . rand());
                 $result = $client->getResponse()->getContent();
@@ -90,15 +91,26 @@ class BlogfaSignupCommand extends AppCommand
             } while($result != 'free');
 
             $blog_password = substr(md5($blog_username), 12, 8);
-            $blog_email = $blog_username . '@yourinbox.ir';
+
+            $blog_email = $user->getEmail();
+            $blog_email = explode('@', $blog_email);
+            $blog_email = $blog_email[0] . '@yourinbox.ir';
+
+            $blog_title = $blog->getTitle();
+
+            $blog_description = $blog->getDescription();
+            $blog_description = empty($blog_description) ? $blog_title : $blog_description;
+
+            $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
+
             $form = $crawler->filter('#master_ContentPlaceHolder1_btnSignUp')->first()->form();
-            $crawler = $client->submit($form, [
+            $client->submit($form, [
                 'master$ContentPlaceHolder1$txtUsername' => $blog_username,
                 'master$ContentPlaceHolder1$txtPasswordFirst' => $blog_password,
                 'master$ContentPlaceHolder1$txtPassword2' => $blog_password,
-                'master$ContentPlaceHolder1$txtTitle' => 'a new blogfa blog',
-                'master$ContentPlaceHolder1$txtAuthor' => $blog_username,
-                'master$ContentPlaceHolder1$txtDescription' => 'my new blogfa blog',
+                'master$ContentPlaceHolder1$txtTitle' => $blog_title,
+                'master$ContentPlaceHolder1$txtAuthor' => $blog_author,
+                'master$ContentPlaceHolder1$txtDescription' => $blog_description,
                 'master$ContentPlaceHolder1$txtPEmail' => $blog_email,
                 'txtCaptcha' => $code
             ]);
@@ -156,6 +168,8 @@ class BlogfaSignupCommand extends AppCommand
                 $continue = false;
             }
         }
+
+        $output->writeln("Operation complated");
 
     }
 
