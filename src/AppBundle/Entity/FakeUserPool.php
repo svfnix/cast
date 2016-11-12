@@ -51,6 +51,14 @@ class FakeUserPool
 
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="used", type="boolean")
+     */
+    private $used;
+
+
+    /**
      * Get id
      *
      * @return int

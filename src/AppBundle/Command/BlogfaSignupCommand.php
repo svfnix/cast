@@ -62,17 +62,25 @@ class BlogfaSignupCommand extends AppCommand
             }
 
             $output->writeln(" - registring");
-            
-            $user = $em->getRepository('FakeUserPoolRepository')->findBy([], ['RAND()']);
 
-            $result = null;
-            $blog_username = 'user';
-            while($result != 'free') {
+            $query = $em->createQuery("SELECT b FROM FakeBlogPool b");
+            $query->setMaxResults(1);
+            $blog = $query->getSingleResult();
+
+            do{
+                $query = $em->createQuery("SELECT u FROM FakeUserPool u");
+                $query->setMaxResults(1);
+                $user = $query->getSingleResult();
+
+                $em->remove();
+
+                $blog_username = $user->username;
+
                 $client->request('GET', 'http://blogfa.com/checkuser.ashx?u=' . $blog_username . '&rnd=0.' . rand());
                 $result = $client->getResponse()->getContent();
-                if($result != 'free'){
-                }
-            }
+
+            } while($result != 'free');
+
 
             $blog_password = substr(md5($blog_username), 12, 8);
             $blog_email = $blog_username . '@yourinbox.ir';
