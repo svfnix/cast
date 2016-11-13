@@ -45,9 +45,9 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
                 $image = '';
                 $description = $item->filter('description')->text();
-                preg_match_all('/<img src="([^"]+)"[^>]+>/i', $description, $images);
+                preg_match('/<img src="([^"]+)"[^>]+>/i', $description, $images);
                 if (isset($images[1])) {
-                    $image = $images[0][1];
+                    $image = $images[1];
                 }
 
                 $client = new Client();
