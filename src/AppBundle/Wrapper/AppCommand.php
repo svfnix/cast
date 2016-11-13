@@ -6,6 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class AppCommand extends ContainerAwareCommand
 {
+
+    /**
+     * @var Client
+     */
+    protected $client;
+
     protected function getRoot()
     {
         return dirname($this->getContainer()->get('kernel')->getRootDir());
