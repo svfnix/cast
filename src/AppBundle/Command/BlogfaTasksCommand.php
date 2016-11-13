@@ -74,10 +74,24 @@ class BlogfaTasksCommand extends AppCommandBlogfa
         $id = rand(1, 26);
         $crawler = $this->client->request('GET', 'https://www.blogfa.com/Desktop/Links.aspx?t='.time());
         $form = $crawler->filter('#btnSave')->first()->form();
+
+        $domdocument = new \DOMDocument;
+
+        $ff = $domdocument->createElement('input');
+        $ff->setAttribute('name', 'txttitle1');
+        $ff->setAttribute('value', 'سفارش استیکر');
+        $field1 = new InputFormField($ff);
+
+        $ff = $domdocument->createElement('input');
+        $ff->setAttribute('name', 'txturl1');
+        $ff->setAttribute('value', 'http://telegfa.com');
+        $field2 = new InputFormField($ff);
+
+        $form->set($field1);
+        $form->set($field2);
+
         $this->client->submit($form, [
-            'lcount' => 1,
-            'txttitle1' => 'سفارش استیکر',
-            'txturl1' => 'http://telegfa.com'
+            'lcount' => 1
         ]);
 
         $output->writeln(" - links updated");
