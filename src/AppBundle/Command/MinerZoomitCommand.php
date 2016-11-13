@@ -33,7 +33,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
         $last_id = $setting->getValue();
 
         $crawler = $this->client->request('GET', 'http://www.zoomit.ir/feed/');
-        /*$crawler->filter('item')->each(function($item) use ($em, $output, $setting, $last_id){
+        $crawler->filter('item')->each(function($item) use ($em, $output, $setting, $last_id){
 
             $title = $item->filter('title')->text();
             $link = $item->filter('link')->text();
@@ -74,11 +74,11 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 }
             }
 
-        });*/
+        });
 
 
         $em->merge($setting);
-        $em-flush();
+        $em->flush();
     }
 
 }
