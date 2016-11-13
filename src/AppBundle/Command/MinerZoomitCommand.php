@@ -43,7 +43,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
             if($article_id > $last_id) {
 
-                $image = null;
+                $image = '';
                 $description = $item->filter('description')->text();
                 preg_match_all('/<img src="([^"]+)"[^>]+>/i', $description, $images);
                 if (isset($images[1])) {
@@ -52,7 +52,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
                 $client = new Client();
                 $crawler = $client->request('GET', $link);
-                $content = $crawler->filter('.article-section')->first()->text();
+                $content = $crawler->filter('.article-section')->first()->html();
                 echo $content."\n";
 
                 $article = new Article();
@@ -62,7 +62,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $article->setSource($link);
 
                 $em->persist($article);
-                $em-flush();
+                $em->flush();
 
                 if($article_id > $setting->getValue()){
                     $setting->setValue($article_id);
