@@ -60,6 +60,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $article->setContent($content);
                 $article->setImage($image);
                 $article->setSource($link);
+                $article->setTags('');
 
                 $em->persist($article);
                 $em->flush();
