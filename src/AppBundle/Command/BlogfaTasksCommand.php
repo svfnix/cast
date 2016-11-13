@@ -91,10 +91,8 @@ class BlogfaTasksCommand extends AppCommandBlogfa
         $form->set($field1);
         $form->set($field2);
 
-        $this->client->submit($form, [
-            'lcount' => 1
-        ]);
-
+        $this->client->submit($form, ['lcount' => 1]);
+        $this->client->request('GET', 'http://blogfa.com/Desktop/refreshblog.ashx?r='.time());
         $output->writeln(" - links updated");
 
         $account->setTask(2);
