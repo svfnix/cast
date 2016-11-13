@@ -10,13 +10,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppMinerZoomitCommand extends ContainerAwareCommand
+class MinerZoomitCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
-            ->setName('app:miner:zoomit')
-            ->setDescription('...')
+            ->setName('miner:zoomit')
+            ->setDescription('crawl zoomit')
             ->addArgument('argument', InputArgument::OPTIONAL, 'Argument description')
             ->addOption('option', null, InputOption::VALUE_NONE, 'Option description')
         ;
