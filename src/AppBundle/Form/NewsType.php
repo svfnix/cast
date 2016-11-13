@@ -18,7 +18,9 @@ class NewsType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, ['label'=>'عنوان خبر'])
-            ->add('content', TextareaType::class, ['label'=>'متن خبر']);
+            ->add('content', TextareaType::class, ['label'=>'متن خبر', 'required'=>false])
+            ->add('tags', TextType::class, ['label'=>'تگ ها'])
+        ;
     }
     
     /**
