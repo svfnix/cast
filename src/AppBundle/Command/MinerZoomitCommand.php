@@ -47,7 +47,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $description = $item->filter('description')->text();
                 preg_match_all('/<img src="([^"]+)"[^>]+>/i', $description, $images);
                 if (isset($images[1])) {
-                    $image = $images[1];
+                    $image = $images[0][1];
                 }
 
                 $client = new Client();
@@ -58,7 +58,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $article = new Article();
                 $article->setTitle($title);
                 $article->setContent($content);
-                //$article->setImage($image);
+                $article->setImage($image);
                 $article->setSource($link);
 
                 $em->persist($article);
