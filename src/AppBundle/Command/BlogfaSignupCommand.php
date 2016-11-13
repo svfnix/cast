@@ -2,11 +2,11 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\AppCommand;
 use AppBundle\Entity\Account;
 use AppBundle\Entity\Capcha;
 use AppBundle\Entity\FakeBlogPool;
 use AppBundle\Entity\FakeUserPool;
+use AppBundle\Wrapper\AppCommandBlogfa;
 use Goutte\Client;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

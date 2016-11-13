@@ -2,8 +2,8 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Wrapper\AppCommandBlogfa;
 use Goutte\Client;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

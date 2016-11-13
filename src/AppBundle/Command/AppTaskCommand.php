@@ -4,13 +4,13 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\FakeBlogPool;
 use AppBundle\Entity\FakeUserPool;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use AppBundle\Wrapper\AppCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AppTaskCommand extends ContainerAwareCommand
+class AppTaskCommand extends AppCommand
 {
     protected function configure()
     {
