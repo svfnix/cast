@@ -6,7 +6,7 @@
     <table>
         <tbody>
             <tr>
-                <th>شناسه</th>
+                <th width="50px">شناسه</th>
                 <td>{{ news.id }}</td>
             </tr>
             <tr>
@@ -14,8 +14,10 @@
                 <td>{{ news.title }}</td>
             </tr>
             <tr>
-                <th>محتوا</th>
-                <td>{{ news.content|raw }}</td>
+                <td colspan="2">
+                    <strong>محتوا</strong>
+                    <div>{{ news.content|raw }}</div>
+                </td>
             </tr>
         </tbody>
     </table>
