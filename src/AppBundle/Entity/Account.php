@@ -56,6 +56,13 @@ class Account
      */
     private $lastUpdate;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="task")
+     */
+    private $task;
+
 
     /**
      * Get id
@@ -173,11 +180,32 @@ class Account
 
     /**
      * @param \Datetime $lastUpdate
+     *
      * @return $this
      */
     public function setLastUpdate($lastUpdate)
     {
         $this->lastUpdate = $lastUpdate;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTask()
+    {
+        return $this->task;
+    }
+
+    /**
+     * @param mixed $task
+     *
+     * @return $this
+     */
+    public function setTask($task)
+    {
+        $this->task = $task;
 
         return $this;
     }

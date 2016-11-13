@@ -13,10 +13,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class BlogfaSignupCommand extends AppCommand
+class BlogfaSignupCommand extends AppCommandBlogfa
 {
-    const service = "blogfa";
-
     protected function configure()
     {
         $this
@@ -39,12 +37,12 @@ class BlogfaSignupCommand extends AppCommand
             $output->writeln("create blog: {$count}");
 
             $output->writeln(" - create client");
-            $client = new Client();
-            $crawler = $client->request('GET', 'http://blogfa.com/newblog.aspx?');
+            $this->client = new Client();
+            $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
 
             $output->writeln(" - grab captcha");
-            $client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
-            $this->showImage($client->getResponse()->getContent());
+            $this->client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
+            $this->showImage($this->client->getResponse()->getContent());
 
             $helper = $this->getHelper('question');
 
@@ -58,8 +56,8 @@ class BlogfaSignupCommand extends AppCommand
                     $question = new ConfirmationQuestion('Do you want to refresh captcha? (y/yes): ', false);
                     $acceptance = $helper->ask($input, $output, $question);
                     while (in_array(strtolower($acceptance), ['y', 'yes'])) {
-                        $client->request('GET', 'http://blogfa.com/captcha.ashx?' . time());
-                        $this->showImage($client->getResponse()->getContent());
+                        $this->client->request('GET', 'http://blogfa.com/captcha.ashx?' . time());
+                        $this->showImage($this->client->getResponse()->getContent());
                     }
                 }
             }
@@ -85,8 +83,8 @@ class BlogfaSignupCommand extends AppCommand
 
                 $blog_username = $user->getUsername();
 
-                $client->request('GET', 'http://blogfa.com/checkuser.ashx?u=' . $blog_username . '&rnd=0.' . rand());
-                $result = $client->getResponse()->getContent();
+                $this->client->request('GET', 'http://blogfa.com/checkuser.ashx?u=' . $blog_username . '&rnd=0.' . rand());
+                $result = $this->client->getResponse()->getContent();
 
             } while($result != 'free');
 
@@ -104,7 +102,7 @@ class BlogfaSignupCommand extends AppCommand
             $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
 
             $form = $crawler->filter('#master_ContentPlaceHolder1_btnSignUp')->first()->form();
-            $client->submit($form, [
+            $this->client->submit($form, [
                 'master$ContentPlaceHolder1$txtUsername' => $blog_username,
                 'master$ContentPlaceHolder1$txtPasswordFirst' => $blog_password,
                 'master$ContentPlaceHolder1$txtPassword2' => $blog_password,
@@ -150,7 +148,7 @@ class BlogfaSignupCommand extends AppCommand
             }
 
             $output->writeln(" - activating blog");
-            $client->request('GET', $confirmation_link);
+            $this->client->request('GET', $confirmation_link);
 
             $account = new Account();
             $account->setService(self::service);
@@ -169,7 +167,7 @@ class BlogfaSignupCommand extends AppCommand
             }
         }
 
-        $output->writeln("Operation complated");
+        $output->writeln("Operation completed");
 
     }
 

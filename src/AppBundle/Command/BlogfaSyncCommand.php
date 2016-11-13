@@ -10,10 +10,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
 
-class BlogfaSyncCommand extends ContainerAwareCommand
+class BlogfaSyncCommand extends AppCommandBlogfa
 {
-    const service = "blogfa";
-
     protected function configure()
     {
         $this
@@ -30,7 +28,8 @@ class BlogfaSyncCommand extends ContainerAwareCommand
         $output->writeln("Start syncing");
         $output->writeln(" - select an account");
 
-        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = 'blogfa' ORDER BY a.lastUpdate ASC");
+        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = ':service' ORDER BY a.lastUpdate ASC");
+        $query->setParameter('service', self::service);
         $query->setMaxResults(1);
         $account = $query->getSingleResult();
 
@@ -40,28 +39,22 @@ class BlogfaSyncCommand extends ContainerAwareCommand
 
         $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
 
-        $client = new Client();
-        $crawler = $client->request('GET', 'http://blogfa.com/Desktop/login.aspx?');
-        $form = $crawler->filter('.btn')->first()->form();
-        $client->submit($form, [
-            'usrid' => $account->getUsername(),
-            'usrpass' => $account->getPassword()
-        ]);
+        $this->client = new Client();
+        $this->signin($account);
 
         $output->writeln(" - submit new post. wait 10 secs  ...");
-        $crawler = $client->request('GET', 'http://blogfa.com/Desktop/Default.aspx?');
-        $crawler = $client->request('GET', 'http://blogfa.com/Desktop/'.$crawler->filter('#menu > a')->eq(1)->attr('href'));
+        $crawler = $this->getMenuLink(1);
 
         sleep(10);
         $form = $crawler->filter('#btnPublish')->first()->form();
-        $client->submit($form, [
+        $this->client->submit($form, [
             'txtTitle' => 'سلام',
             'txtPostBody' => '<p>اولین پست</p>'
         ]);
 
         $output->writeln(" - post submitted successfully");
         $output->writeln(" - refresh blog");
-        $client->request('GET', 'http://blogfa.com/Desktop/refreshblog.ashx?r='.time());
+        $this->client->request('GET', 'http://blogfa.com/Desktop/refreshblog.ashx?r='.time());
 
         $output->writeln("Operation complated");
     }
