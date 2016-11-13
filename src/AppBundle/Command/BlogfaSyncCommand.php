@@ -37,10 +37,19 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $em->merge($account);
         $em->flush();
 
-        $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
-
         $this->client = new Client();
+
+        $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
         $this->signin($account);
+
+
+        $output->writeln(" - select an article");
+        $query = $em->createQuery("SELECT a FROM AppBundle:Article a ORDER BY a.id ASC");
+        $query->setMaxResults(1);
+        $article = $query->getSingleResult();
+        $tags = $article->getTags();
+        $tags = explode(',', $tags);
+        $tags = implode('+', $tags);
 
         $output->writeln(" - submit new post. wait 10 secs  ...");
         $crawler = $this->getMenuLink(1);
@@ -48,15 +57,19 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         sleep(10);
         $form = $crawler->filter('#btnPublish')->first()->form();
         $this->client->submit($form, [
-            'txtTitle' => 'سلام',
-            'txtPostBody' => '<p>اولین پست</p>'
+            'txtTitle' => $article->getTitle(),
+            'txtPostBody' => $article->getContent(),
+            'txtTags' => $tags
         ]);
+
+        $em->remove($query);
+        $em->flush();
 
         $output->writeln(" - post submitted successfully");
         $output->writeln(" - refresh blog");
         $this->client->request('GET', 'http://blogfa.com/Desktop/refreshblog.ashx?r='.time());
 
-        $output->writeln("Operation complated");
+        $output->writeln("Operation completed");
     }
 
 }
