@@ -30,17 +30,18 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
         $query = $em->createQuery("SELECT s FROM AppBundle:Setting s WHERE s.name = 'zoomit_last_crawled_id'");
         $setting = $query->getSingleResult();
+        $last_id = $setting->getValue();
 
         $crawler = $this->client->request('GET', 'http://www.zoomit.ir/feed/');
-        $crawler->filter('item')->each(function($item) use ($em, $output, $setting){
+        $crawler->filter('item')->each(function($item) use ($em, $output, $setting, $last_id){
 
             $title = $item->filter('title')->text();
             $link = $item->filter('link')->text();
 
-            $artid = explode('/', $link);
-            $artid = $artid[6];
+            $article_id = explode('/', $link);
+            $article_id = $article_id[6];
 
-            if($artid > $setting->getValue()) {
+            if($article_id > $last_id) {
 
                 $image = null;
                 $description = $item->filter('description')->text();
@@ -62,9 +63,17 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $em->persist($article);
                 $em-flush();
 
+                if($article_id > $setting->getValue()){
+                    $setting->setValue($article_id);
+                }
+
             }
 
         });
+
+
+        $em->persist($setting);
+        $em-flush();
     }
 
 }
