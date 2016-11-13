@@ -52,6 +52,7 @@ class BlogfaTasksCommand extends AppCommandBlogfa
 
         $id = rand(1, 26);
         $this->client->request('GET', 'https://www.blogfa.com/Desktop/SelectTemplate.aspx?id='.$id);
+        $this->client->request('GET', 'http://blogfa.com/Desktop/refreshblog.ashx?r='.time());
         $output->writeln(" - theme changed to {$id}");
 
         $account->setTask(1);
