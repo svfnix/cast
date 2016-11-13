@@ -1,5 +1,5 @@
 <?php
-namespace AppBundle;
+namespace AppBundle\Command;
 
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;

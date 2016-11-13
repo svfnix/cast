@@ -1,5 +1,5 @@
 <?php
-namespace AppBundle;
+namespace AppBundle\Command;
 
 class AppCommandBlogfa extends AppCommand
 {
