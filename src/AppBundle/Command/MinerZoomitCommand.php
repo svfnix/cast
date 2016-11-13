@@ -77,7 +77,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
         });
 
 
-        $em->persist($setting);
+        $em->merge($setting);
         $em-flush();
     }
 
