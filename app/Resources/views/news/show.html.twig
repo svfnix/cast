@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>مشاهده خبر</h1>
+    <hr />
+    <table>
+        <tbody>
+            <tr>
+                <th>شناسه</th>
+                <td>{{ news.id }}</td>
+            </tr>
+            <tr>
+                <th>عنوان</th>
+                <td>{{ news.title }}</td>
+            </tr>
+            <tr>
+                <th>محتوا</th>
+                <td>{{ news.content }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>&nbsp;</p>
+    {{ form_start(delete_form) }}
+    <table>
+        <tr>
+            <td style="padding-left: 10px"><a href="{{ path('news_index') }}" class="btn btn-warning">بازگشت</a></td>
+            <td style="padding-left: 10px"><a href="{{ path('news_edit', { 'id': news.id }) }}" class="btn btn-info">ویرایش</a></td>
+            <td><input type="submit" value="حذف" class="btn btn-danger"></td>
+        </tr>
+    </table>
+    {{ form_end(delete_form) }}
+{% endblock %}

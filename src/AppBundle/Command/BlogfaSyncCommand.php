@@ -26,14 +26,39 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
         $output->writeln("Start syncing");
-        $output->writeln(" - select an account");
 
-        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = ?1 ORDER BY a.lastUpdate ASC");
+        $output->writeln(" - select an account for news");
+        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = ?1 ORDER BY a.news ASC");
         $query->setParameter(1, self::service);
         $query->setMaxResults(1);
         $account = $query->getSingleResult();
 
-        $account->setLastUpdate(new \DateTime());
+        $output->writeln(" - select a news");
+        $query = $em->createQuery("SELECT a FROM AppBundle:News n WHERE n.id > ?1 ORDER BY n.id ASC");
+        $query->setParameter(1, $account->getNews());
+        $query->setMaxResults(1);
+        $article = $query->getOneOrNullResult();
+
+        if($article) {
+            $output->writeln(" - news found: " . $article->gettitle());
+            $account->setNews($article->getId());
+        } else {
+
+            $output->writeln(" - no news found. select an account for update");
+            $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = ?1 ORDER BY a.lastUpdate ASC");
+            $query->setParameter(1, self::service);
+            $query->setMaxResults(1);
+            $account = $query->getSingleResult();
+
+            $output->writeln(" - select an article");
+            $query = $em->createQuery("SELECT a FROM AppBundle:Article a ORDER BY a.id ASC");
+            $query->setMaxResults(1);
+            $article = $query->getSingleResult();
+
+            $output->writeln(" - article found: " . $article->gettitle());
+            $account->setLastUpdate(new \DateTime());
+        }
+
         $em->merge($account);
         $em->flush();
 
@@ -41,15 +66,6 @@ class BlogfaSyncCommand extends AppCommandBlogfa
 
         $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
         $this->signin($account);
-
-
-        $output->writeln(" - select an article");
-        $query = $em->createQuery("SELECT a FROM AppBundle:Article a ORDER BY a.id ASC");
-        $query->setMaxResults(1);
-        $article = $query->getSingleResult();
-        $tags = $article->getTags();
-        $tags = explode(',', $tags);
-        $tags = implode('+', $tags);
 
         $output->writeln(" - submit new post. wait 10 secs  ...");
         $crawler = $this->getMenuLink(1);
@@ -59,7 +75,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $this->client->submit($form, [
             'txtTitle' => $article->getTitle(),
             'txtPostBody' => $this->clearContent($article->getContent()),
-            'txtTags' => $tags
+            'txtTags' => str_replace(',', '+', $article->getTags())
         ]);
 
         $em->remove($article);

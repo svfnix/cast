@@ -1,13 +1,24 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
-    </head>
-    <body>
+<html lang="fa" dir="rtl">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <title>مدیریت</title>
+    <link href="/vendor/fontiran/css/iransans.css" type="text/css" rel="stylesheet"/>
+    <link href="/vendor/bootstrap/css/bootstrap.css" type="text/css" rel="stylesheet"/>
+    <script src="/vendor/jquery-2.2.4.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.js"></script>
+    <script src="/vendor/bootstrap-wysiwyg/bootstrap-wysiwyg.js"></script>
+
+    <style>
+        *{font-family: IRANSans; font-size: 14px}
+        h1, h2{font-size:20px}
+    </style>
+</head>
+<body marginheight="0" marginwidth="0">
+<div class="container">
+    <div class="row">
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %}
-    </body>
+    </div>
+</div>
+</body>
 </html>

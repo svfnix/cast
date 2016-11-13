@@ -25,6 +25,9 @@ class MinerZoomitCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+
+        $output->writeln("Start crawling ...");
+
         $this->client = new Client();
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
@@ -40,6 +43,9 @@ class MinerZoomitCommand extends ContainerAwareCommand
             $owner = explode('/', $link);
             if($owner[2] == 'www.zoomit.ir') {
 
+
+                $output->writeln(" - item found: " . $title);
+
                 $article_id = explode('/', $link);
                 $article_id = $article_id[6];
 
@@ -47,7 +53,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
                     $image = '';
                     $description = $item->filter('description')->text();
-                    preg_match('/<img src="([^"]+)"[^>]+>/i', $description, $images);
+                    preg_match('/<img.*?src="([^"]+)"[^>]+>/i', $description, $images);
                     if (isset($images[1])) {
                         $image = $images[1];
                     }

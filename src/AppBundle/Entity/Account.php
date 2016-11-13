@@ -63,6 +63,13 @@ class Account
      */
     private $task;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="news")
+     */
+    private $news;
+
 
     /**
      * Get id
@@ -206,6 +213,26 @@ class Account
     public function setTask($task)
     {
         $this->task = $task;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNews()
+    {
+        return $this->news;
+    }
+
+    /**
+     * @param int $news
+     *
+     * @return $this
+     */
+    public function setNews($news)
+    {
+        $this->news = $news;
 
         return $this;
     }

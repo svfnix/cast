@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>ویرایش خبر</h1>
+    <div class="btn-toolbar" data-role="editor-toolbar" data-target="#editor"></div>
+    {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+        <input type="submit" value="ویرایش" class="btn btn-success" />
+    {{ form_end(edit_form) }}
+
+    <p>&nbsp;</p>
+    {{ form_start(delete_form) }}
+    <table>
+        <tr>
+            <td style="padding-left: 10px"><a href="{{ path('news_index') }}" class="btn btn-warning">بازگشت</a></td>
+            <td><input type="submit" value="حذف" class="btn btn-danger"></td>
+        </tr>
+    </table>
+    {{ form_end(delete_form) }}
+
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            selector:'#appbundle_news_content',
+            height: 350,
+            directionality : 'rtl',
+            plugins: [
+                'advlist autolink lists link image charmap print preview anchor',
+                'searchreplace visualblocks code fullscreen',
+                'insertdatetime media table contextmenu paste code'
+            ],
+            toolbar: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+            content_css: '//www.tinymce.com/css/codepen.min.css'
+        });
+    </script>
+{% endblock %}

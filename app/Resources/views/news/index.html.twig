@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>News list</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="25px">شناسه</th>
+                <th>عنوان</th>
+                <th width="100px">مدیریت</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for news in news %}
+            <tr>
+                <td>{{ news.id }}</td>
+                <td><a href="{{ path('news_show', { 'id': news.id }) }}">{{ news.title }}</a></td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('news_show', { 'id': news.id }) }}">مشاهده</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('news_edit', { 'id': news.id }) }}">ویرایش</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('news_new') }}" class="btn btn-success">ثبت خبر جدید</a>
+{% endblock %}
