@@ -25,8 +25,8 @@ class BlogfaTasksCommand extends AppCommandBlogfa
         $output->writeln("Start task");
         $output->writeln(" - select an account");
 
-        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = ':service' ORDER BY a.lastUpdate ASC");
-        $query->setParameter('service', self::service);
+        $query = $em->createQuery("SELECT a FROM AppBundle:Account a WHERE a.service = '?!' ORDER BY a.lastUpdate ASC");
+        $query->setParameter(1, self::service);
         $query->setMaxResults(1);
         $account = $query->getSingleResult();
 
