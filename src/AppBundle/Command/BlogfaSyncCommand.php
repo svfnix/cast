@@ -42,6 +42,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         if($article) {
             $output->writeln(" - news found: " . $article->gettitle());
             $account->setNews($article->getId());
+            $content = $article->getContent();
         } else {
 
             $output->writeln(" - no news found. select an account for update");
@@ -57,6 +58,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
 
             $output->writeln(" - article found: " . $article->gettitle());
             $account->setLastUpdate(new \DateTime());
+            $content = $this->clearContent($article->getContent());
         }
 
         $em->merge($account);
@@ -74,7 +76,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $form = $crawler->filter('#btnPublish')->first()->form();
         $this->client->submit($form, [
             'txtTitle' => $article->getTitle(),
-            'txtPostBody' => $this->clearContent($article->getContent()),
+            'txtPostBody' => $content,
             'txtTags' => str_replace(',', '+', $article->getTags())
         ]);
 
