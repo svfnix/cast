@@ -55,14 +55,14 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $content = $crawler->filter('.article-section')->first()->text();
                 echo $content."\n";
 
-                /*$article = new Article();
+                $article = new Article();
                 $article->setTitle($title);
                 $article->setContent($content);
                 $article->setImage($image);
                 $article->setSource($link);
 
                 $em->persist($article);
-                $em-flush();*/
+                $em-flush();
 
                 if($article_id > $setting->getValue()){
                     $setting->setValue($article_id);
