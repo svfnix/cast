@@ -34,7 +34,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $account = $query->getSingleResult();
 
         $output->writeln(" - select a news");
-        $query = $em->createQuery("SELECT a FROM AppBundle:News n WHERE n.id > ?1 ORDER BY n.id ASC");
+        $query = $em->createQuery("SELECT n FROM AppBundle:News n WHERE n.id > ?1 ORDER BY n.id ASC");
         $query->setParameter(1, $account->getNews());
         $query->setMaxResults(1);
         $article = $query->getOneOrNullResult();
