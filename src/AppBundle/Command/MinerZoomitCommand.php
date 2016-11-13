@@ -53,6 +53,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                 $client = new Client();
                 $crawler = $client->request('GET', $link);
                 $content = $crawler->filter('.article-section')->first()->text();
+                echo $content."\n";
 
                 /*$article = new Article();
                 $article->setTitle($title);
