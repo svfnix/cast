@@ -37,38 +37,41 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
             $title = $item->filter('title')->text();
             $link = $item->filter('link')->text();
+            $owner = explode('/', $link);
+            if($owner[2] == 'www.zoomit.ir') {
 
-            $article_id = explode('/', $link);
-            $article_id = $article_id[6];
+                $article_id = explode('/', $link);
+                $article_id = $article_id[6];
 
-            if($article_id > $last_id) {
+                if ($article_id > $last_id) {
 
-                $image = '';
-                $description = $item->filter('description')->text();
-                preg_match('/<img src="([^"]+)"[^>]+>/i', $description, $images);
-                if (isset($images[1])) {
-                    $image = $images[1];
+                    $image = '';
+                    $description = $item->filter('description')->text();
+                    preg_match('/<img src="([^"]+)"[^>]+>/i', $description, $images);
+                    if (isset($images[1])) {
+                        $image = $images[1];
+                    }
+
+                    $client = new Client();
+                    $crawler = $client->request('GET', $link);
+                    $content = $crawler->filter('.article-section')->first()->html();
+                    echo $content . "\n";
+
+                    $article = new Article();
+                    $article->setTitle($title);
+                    $article->setContent($content);
+                    $article->setImage($image);
+                    $article->setSource($link);
+                    $article->setTags('');
+
+                    $em->persist($article);
+                    $em->flush();
+
+                    if ($article_id > $setting->getValue()) {
+                        $setting->setValue($article_id);
+                    }
+
                 }
-
-                $client = new Client();
-                $crawler = $client->request('GET', $link);
-                $content = $crawler->filter('.article-section')->first()->html();
-                echo $content."\n";
-
-                $article = new Article();
-                $article->setTitle($title);
-                $article->setContent($content);
-                $article->setImage($image);
-                $article->setSource($link);
-                $article->setTags('');
-
-                $em->persist($article);
-                $em->flush();
-
-                if($article_id > $setting->getValue()){
-                    $setting->setValue($article_id);
-                }
-
             }
 
         });
