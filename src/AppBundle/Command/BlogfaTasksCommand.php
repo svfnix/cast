@@ -31,6 +31,7 @@ class BlogfaTasksCommand extends AppCommandBlogfa
         $account = $query->getSingleResult();
 
         $this->client = new Client();
+
         switch ($account->getTask()){
             case 0:
                     $this->task_1($account, $output, $em);
