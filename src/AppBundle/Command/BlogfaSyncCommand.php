@@ -62,7 +62,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
             'txtTags' => $tags
         ]);
 
-        $em->remove($query);
+        $em->remove($article);
         $em->flush();
 
         $output->writeln(" - post submitted successfully");
