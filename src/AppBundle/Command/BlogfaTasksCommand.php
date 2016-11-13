@@ -34,7 +34,7 @@ class BlogfaTasksCommand extends ContainerAwareCommand
 
         switch ($account->getTask()){
             case 0:
-                    $this->task_1($account, $output);
+                    $this->task_1($account, $output, $em);
                 break;
         }
 
@@ -44,7 +44,7 @@ class BlogfaTasksCommand extends ContainerAwareCommand
     /**
      * Set theme
      */
-    private function task_1($account, $output) {
+    private function task_1($account, $output, $em) {
 
         $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
         $this->signin($account);
@@ -52,6 +52,10 @@ class BlogfaTasksCommand extends ContainerAwareCommand
         $id = rand(1, 26);
         $this->client->request('GET', 'https://www.blogfa.com/Desktop/SelectTemplate.aspx?id='.$id);
         $output->writeln(" - theme changed to {$id}");
+
+        $account->setTask(1);
+        $em->merge($account);
+        $em->flush();
     }
 
 }
