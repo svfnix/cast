@@ -35,7 +35,10 @@ class BlogfaTasksCommand extends AppCommandBlogfa
 
         switch ($account->getTask()){
             case 0:
-                    $this->task_1($account, $output, $em);
+                $this->task_1($account, $output, $em);
+                break;
+            case 1:
+                $this->task_2($account, $output, $em);
                 break;
         }
 
@@ -56,6 +59,30 @@ class BlogfaTasksCommand extends AppCommandBlogfa
         $output->writeln(" - theme changed to {$id}");
 
         $account->setTask(1);
+        $em->merge($account);
+        $em->flush();
+    }
+
+    /**
+     * Set links
+     */
+    private function task_2($account, $output, $em) {
+
+        $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
+        $this->signin($account);
+
+        $id = rand(1, 26);
+        $crawler = $this->client->request('GET', 'https://www.blogfa.com/Desktop/Links.aspx?t='.time());
+        $form = $crawler->filter('#btnSave')->first()->form();
+        $this->client->submit($form, [
+            'lcount' => 1,
+            'txttitle1' => 'سفارش استیکر',
+            'txturl1' => 'http://telegfa.com'
+        ]);
+
+        $output->writeln(" - links updated");
+
+        $account->setTask(2);
         $em->merge($account);
         $em->flush();
     }
