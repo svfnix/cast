@@ -58,7 +58,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $form = $crawler->filter('#btnPublish')->first()->form();
         $this->client->submit($form, [
             'txtTitle' => $article->getTitle(),
-            'txtPostBody' => $article->getContent(),
+            'txtPostBody' => $this->clearContent($article->getContent()),
             'txtTags' => $tags
         ]);
 
