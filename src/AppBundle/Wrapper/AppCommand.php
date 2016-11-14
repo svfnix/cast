@@ -17,7 +17,7 @@ class AppCommand extends ContainerAwareCommand
     {
         $config = [
             'proxy' => [
-                'socks' => file_get_contents('proxy')
+                'http' => file_get_contents('proxy')
             ]
         ];
         $this->client = new Client();
