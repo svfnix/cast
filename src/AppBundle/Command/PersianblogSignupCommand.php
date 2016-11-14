@@ -2,6 +2,7 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\Account;
 use AppBundle\Wrapper\AppCommandPersianblog;
 use Goutte\Client;
 use Symfony\Component\Console\Input\InputArgument;
@@ -84,7 +85,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 $blog_username = $user->getUsername();
 
                 $domdocument = new \DOMDocument;
-                $form = $crawler->filter('#signup')->first()->form();
+                $form = $crawler->filter('#btnSignup')->first()->form();
 
                 $ff = $domdocument->createElement('input');
                 $ff->setAttribute('name', '__CALLBACKID');
@@ -101,11 +102,12 @@ class PersianblogSignupCommand extends AppCommandPersianblog
 
                 $this->client->submit($form);
                 $result = $this->client->getResponse()->getContent();
+                echo $result;
 
             } while($result != 's0');
 
 
-            $blog_password = substr(md5($blog_username), 11, 10);
+            $blog_password = substr(md5($blog_username), 12, 8);
 
             $blog_email = $user->getEmail();
             $blog_email = explode('@', $blog_email);
@@ -113,9 +115,10 @@ class PersianblogSignupCommand extends AppCommandPersianblog
 
             $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
             $security_question = rand(1, 9);
-            $security_answer = md5($blog_password);
+            $security_answer = $user->getFname();
 
-            $form = $crawler->filter('#signup')->first()->form();
+            $crawler = $this->client->request('GET', 'http://persianblog.ir/CreateBlog.aspx');
+            $form = $crawler->filter('#btnSignup')->first()->form();
             $this->client->submit($form, [
                 'TxtUsername' => $blog_username,
                 'TxtPassword1' => $blog_password,
@@ -127,7 +130,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 'TxtSecurityCode' => $code,
                 'ChkTerms' => 'on'
             ]);
-            file_put_contents('result.html', $this->client->getResponse()->getContent());
+            file_put_contents('result.html', print_r($this->client, 1));
             $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");
@@ -147,7 +150,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                     if($overview[0]->to == $blog_email) {
                         $message = imap_fetchbody($inbox, $email_number, 1);
                         $message = base64_decode($message);
-                        if(preg_match('#http://persianblog.ir/Activation.aspx[^\"]+#Si', $message, $matches)) {
+                        if(preg_match('#http://persianblog.ir/Activation.aspx[^\n]+#Si', $message, $matches)) {
                             $output->writeln(" - confirmation email found [{$matches[0]}]");
                             $confirmation_link = $matches[0];
                             imap_close($inbox);
@@ -162,7 +165,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             }
 
             $output->writeln(" - activating user");
-            $this->client->request('GET', $confirmation_link);
+            $this->client->request('GET', trim($confirmation_link));
 
 
             $output->writeln(" - creating blog");
@@ -171,11 +174,16 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             do{
                 $blog_name = "{$blog_username}{$counter}";
                 $this->client->request('POST', 'http://persianblog.ir/dyn/blogname-availability.aspx', [], [], ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'], "b={$blog_name}");
-                $result = $this->client->getResponse()->getContent();
+                $result = $this->client->getResponse()->getContent(); echo $result;
                 $counter++;
             }while($result != 'BLOG_getResult(true);');
 
             $blog_title = $blog->getTitle();
+            $form = $crawler->filter('#btnCreate')->first()->form();
+            $this->client->submit($form, [
+                'TxtTitle' => $blog_title,
+                'TxtBlogAddress' => $blog_name
+            ]);
 
             $account = new Account();
             $account->setService(self::service);
