@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Wrapper\AppCommandPersianblog;
+use Goutte\Client;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
