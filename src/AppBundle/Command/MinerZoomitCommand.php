@@ -17,15 +17,11 @@ class MinerZoomitCommand extends ContainerAwareCommand
         $this
             ->setName('miner:zoomit')
             ->setDescription('crawl zoomit')
-            ->addArgument('argument', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option', null, InputOption::VALUE_NONE, 'Option description')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-
         $output->writeln("Start crawling ...");
 
         $this->client = new Client();
@@ -43,13 +39,12 @@ class MinerZoomitCommand extends ContainerAwareCommand
             $owner = explode('/', $link);
             if($owner[2] == 'www.zoomit.ir') {
 
-
-                $output->writeln(" - item found: " . $title);
-
                 $article_id = explode('/', $link);
-                $article_id = $article_id[6];
+                $article_id = intval($article_id[6]);
 
                 if ($article_id > $last_id) {
+
+                    $output->writeln(" - item found: " . $title);
 
                     $image = '';
                     $description = $item->filter('description')->text();
@@ -62,6 +57,13 @@ class MinerZoomitCommand extends ContainerAwareCommand
                     $crawler = $client->request('GET', $link);
                     $content = $crawler->filter('.article-section')->first()->html();
 
+                    $tags = [];
+                    $crawler->filter('.article-tag-row')->filter('a')->each(function($a) use(&$tags){
+                        $tags[] = $a->text();
+                    });
+
+                    $tags = implode(',', $tags);
+
                     $article = new Article();
                     $article->setTitle($title);
                     $article->setContent($content);
@@ -69,7 +71,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                     $article->setSource($link);
                     $article->setTags('');
 
-                    $em->persist($article);
+                    $em->persist($tags);
                     $em->flush();
 
                     if ($article_id > $setting->getValue()) {
@@ -81,6 +83,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
         });
 
+        $output->writeln("finished.");
 
         $em->merge($setting);
         $em->flush();
