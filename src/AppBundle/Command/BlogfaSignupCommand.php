@@ -155,6 +155,10 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $account->setUsername($blog_username);
             $account->setPassword($blog_password);
             $account->setEmail($blog_email);
+            $account->setLastUpdate(new \DateTime());
+            $account->setTask(0);
+            $account->setNews(0);
+            $account->setPosts(0);
 
             $em->persist($account);
             $em->flush();

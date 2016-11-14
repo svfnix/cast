@@ -70,6 +70,13 @@ class Account
      */
     private $news;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="posts")
+     */
+    private $posts;
+
 
     /**
      * Get id
@@ -233,6 +240,26 @@ class Account
     public function setNews($news)
     {
         $this->news = $news;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPosts()
+    {
+        return $this->posts;
+    }
+
+    /**
+     * @param int $posts
+     *
+     * @return $this
+     */
+    public function setPosts($posts)
+    {
+        $this->posts = $posts;
 
         return $this;
     }
