@@ -17,7 +17,7 @@ class AppCommand extends ContainerAwareCommand
     {
         $config = [
             'proxy' => [
-                'http' => '183.131.151.208:80'
+                'http' => file_get_contents('proxy')
             ]
         ];
         $this->client = new Client();
