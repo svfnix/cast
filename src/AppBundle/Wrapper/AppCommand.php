@@ -15,7 +15,7 @@ class AppCommand extends ContainerAwareCommand
 
     protected function startClient()
     {
-        $this->client = new Client();
+        $this->client = new Client(new \GuzzleHttp\Client(new GuzzleClient(array('proxy' => '127.0.0.1:8123', 'defaults' => array('allow_redirects' => false, 'cookies' => true)))));
     }
 
     protected function getRoot()
