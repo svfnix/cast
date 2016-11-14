@@ -98,6 +98,13 @@ class Account
      */
     private $blog;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="blog_id", type="string", length=255)
+     */
+    private $blogId;
+
 
     /**
      * Get id
@@ -351,6 +358,26 @@ class Account
     public function setBlog($blog)
     {
         $this->blog = $blog;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlogId()
+    {
+        return $this->blogId;
+    }
+
+    /**
+     * @param string $blogId
+     *
+     * @return $this
+     */
+    public function setBlogId($blogId)
+    {
+        $this->blogId = $blogId;
 
         return $this;
     }

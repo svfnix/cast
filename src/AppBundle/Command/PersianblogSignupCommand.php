@@ -128,7 +128,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 'TxtSecurityCode' => $code,
                 'ChkTerms' => 'on'
             ]);
-            file_put_contents('result.html', print_r($this->client, 1));
+            
             $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");

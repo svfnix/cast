@@ -69,7 +69,7 @@ class BlogfaTasksCommand extends AppCommandBlogfa
      */
     private function task_2($account, $output, $em) {
 
-        $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
+        $output->writeln(" - signin to blogfa [".$account->getBlog().".blogfa.com]");
         $this->signin($account);
 
         $id = rand(1, 26);
