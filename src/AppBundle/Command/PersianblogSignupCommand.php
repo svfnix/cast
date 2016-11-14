@@ -85,7 +85,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 $blog_username = $user->getUsername();
 
                 $domdocument = new \DOMDocument;
-                $form = $crawler->filter('#btnSignup')->first()->form();
+                $form = $crawler->filter('#signup')->first()->form();
 
                 $ff = $domdocument->createElement('input');
                 $ff->setAttribute('name', '__CALLBACKID');
@@ -102,7 +102,6 @@ class PersianblogSignupCommand extends AppCommandPersianblog
 
                 $this->client->submit($form);
                 $result = $this->client->getResponse()->getContent();
-                echo $result;
 
             } while($result != 's0');
 
@@ -117,7 +116,6 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             $security_question = rand(1, 9);
             $security_answer = $user->getFname();
 
-            $crawler = $this->client->request('GET', 'http://persianblog.ir/CreateBlog.aspx');
             $form = $crawler->filter('#btnSignup')->first()->form();
             $this->client->submit($form, [
                 'TxtUsername' => $blog_username,
@@ -179,6 +177,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             }while($result != 'BLOG_getResult(true);');
 
             $blog_title = $blog->getTitle();
+            $crawler = $this->client->request('GET', 'http://persianblog.ir/CreateBlog.aspx');
             $form = $crawler->filter('#btnCreate')->first()->form();
             $this->client->submit($form, [
                 'TxtTitle' => $blog_title,

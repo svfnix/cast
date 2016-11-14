@@ -113,8 +113,6 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                 'txtCaptcha' => $code
             ]);
 
-            echo $this->client->getResponse()->getContent();
-
             $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");
