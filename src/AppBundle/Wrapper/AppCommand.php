@@ -15,16 +15,7 @@ class AppCommand extends ContainerAwareCommand
 
     protected function startClient()
     {
-        $config = [
-            'proxy' => [
-                'http' => file_get_contents('proxy'),
-                'https' => file_get_contents('proxy'),
-            ],
-            'allow_redirects' => false,
-            'cookies' => true
-        ];
         $this->client = new Client();
-        $this->client->setClient(new \GuzzleHttp\Client($config));
     }
 
     protected function getRoot()
