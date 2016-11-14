@@ -61,7 +61,7 @@ class PersianblogTasksCommand extends AppCommandPersianblog
         $content = $this->client->getResponse()->getContent();
 
         preg_match('#ManagePosts\.aspx\?blogid=([0-9]+)#Si', $content, $matchs);
-        $account->setBlogId($matchs);
+        $account->setBlogId($matchs[1]);
 
         $account->setTask(1);
         $em->merge($account);
