@@ -113,14 +113,16 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                 'txtCaptcha' => $code
             ]);
 
-            $output->writeln(" - weblog created {$blog_username} : {$blog_password} <{$blog_username}.blogfa.com>");
+            echo $this->client->getResponse()->getContent();
+
+            $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");
 
             $confirmation_link = null;
             while(empty($confirmation_link)) {
 
-                $inbox = imap_open('{138.201.142.75:143/notls/norsh/novalidate-cert}INBOX', 'cast@yourinbox.ir', 'castpasswd') or die('Cannot connect to Gmail: ' . imap_last_error());
+                $inbox = imap_open('{138.201.142.75:143/notls/norsh/novalidate-cert}INBOX', 'cast@yourinbox.ir', 'castpasswd');
                 $emails = imap_search($inbox,'ALL');
 
                 if(!$emails){
@@ -133,7 +135,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                     if($overview[0]->to == $blog_email) {
                         $message = imap_fetchbody($inbox, $email_number, 1);
                         $message = base64_decode($message);
-                        if(preg_match('#http\:\/\/www\.blogfa\.com\/confirmemail\.aspx\?u\='.$blog_username.'\&c\=[^\"]+#Si', $message, $matches)) {
+                        if(preg_match('#http://www.blogfa.com/confirmemail.aspx[^\"]+#Si', $message, $matches)) {
                             $output->writeln(" - confirmation email found [{$matches[0]}]");
                             $confirmation_link = $matches[0];
                             imap_close($inbox);
@@ -147,7 +149,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                 }
             }
 
-            $output->writeln(" - activating blog");
+            $output->writeln(" - activating user");
             $this->client->request('GET', $confirmation_link);
 
             $account = new Account();
@@ -159,11 +161,14 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $account->setTask(0);
             $account->setNews(0);
             $account->setPosts(0);
+            $account->setSecurityQuestion('');
+            $account->setSecurityAnswer('');
+            $account->setBlog($blog_username);
 
             $em->persist($account);
             $em->flush();
 
-            $output->writeln("weblog successfully created.");
+            $output->writeln("Registration completed successfully.");
             $question = new Question('Do you want to continue? (y/yes): ');
             $acceptance = $helper->ask($input, $output, $question);
             if (!in_array(strtolower($acceptance), ['y', 'yes', null])) {

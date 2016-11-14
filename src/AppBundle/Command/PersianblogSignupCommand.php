@@ -105,7 +105,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             } while($result != 's0');
 
 
-            $blog_password = substr(md5($blog_username), 12, 8);
+            $blog_password = substr(md5($blog_username), 11, 10);
 
             $blog_email = $user->getEmail();
             $blog_email = explode('@', $blog_email);
@@ -114,31 +114,31 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             $blog_title = $blog->getTitle();
 
             $blog_description = $blog->getDescription();
-            $blog_description = empty($blog_description) ? $blog_title : $blog_description;
 
             $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
-            /*
+            $security_question = rand(1, 9);
+            $security_answer = md5($blog_password);
 
-            $form = $crawler->filter('#master_ContentPlaceHolder1_btnSignUp')->first()->form();
+            $form = $crawler->filter('#signup')->first()->form();
             $this->client->submit($form, [
-                'master$ContentPlaceHolder1$txtUsername' => $blog_username,
-                'master$ContentPlaceHolder1$txtPasswordFirst' => $blog_password,
-                'master$ContentPlaceHolder1$txtPassword2' => $blog_password,
-                'master$ContentPlaceHolder1$txtTitle' => $blog_title,
-                'master$ContentPlaceHolder1$txtAuthor' => $blog_author,
-                'master$ContentPlaceHolder1$txtDescription' => $blog_description,
-                'master$ContentPlaceHolder1$txtPEmail' => $blog_email,
-                'txtCaptcha' => $code
+                'TxtUsername' => $blog_username,
+                'TxtPassword1' => $blog_password,
+                'TxtPassword2' => $blog_password,
+                'TxtFullname' => $blog_author,
+                'TxtEmail' => $blog_email,
+                'CmbQuestion' => $security_question,
+                'TxtPasswordA' => $security_answer,
+                'TxtSecurityCode' => $code,
+                'ChkTerms' => 'on'
             ]);
 
-            $output->writeln(" - weblog created {$blog_username} : {$blog_password} <{$blog_username}.blogfa.com>");
+            $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");
-
             $confirmation_link = null;
             while(empty($confirmation_link)) {
 
-                $inbox = imap_open('{138.201.142.75:143/notls/norsh/novalidate-cert}INBOX', 'cast@yourinbox.ir', 'castpasswd') or die('Cannot connect to Gmail: ' . imap_last_error());
+                $inbox = imap_open('{138.201.142.75:143/notls/norsh/novalidate-cert}INBOX', 'cast@yourinbox.ir', 'castpasswd');
                 $emails = imap_search($inbox,'ALL');
 
                 if(!$emails){
@@ -151,7 +151,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                     if($overview[0]->to == $blog_email) {
                         $message = imap_fetchbody($inbox, $email_number, 1);
                         $message = base64_decode($message);
-                        if(preg_match('#http\:\/\/www\.blogfa\.com\/confirmemail\.aspx\?u\='.$blog_username.'\&c\=[^\"]+#Si', $message, $matches)) {
+                        if(preg_match('#http://persianblog.ir/Activation.aspx[^\"]+#Si', $message, $matches)) {
                             $output->writeln(" - confirmation email found [{$matches[0]}]");
                             $confirmation_link = $matches[0];
                             imap_close($inbox);
@@ -165,8 +165,19 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 }
             }
 
-            $output->writeln(" - activating blog");
+            $output->writeln(" - activating user");
             $this->client->request('GET', $confirmation_link);
+
+
+            $output->writeln(" - creating blog");
+
+            $counter = '';
+            do{
+                $blog_name = "{$blog_username}{$counter}";
+                $this->client->request('POST', 'http://persianblog.ir/dyn/blogname-availability.aspx', ['b' => $blog_name]);
+                $result = $this->client->getResponse()->getContent();
+                $counter++;
+            }while($result != 'BLOG_getResult(true);');
 
             $account = new Account();
             $account->setService(self::service);
@@ -177,6 +188,9 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             $account->setTask(0);
             $account->setNews(0);
             $account->setPosts(0);
+            $account->setSecurityQuestion($security_question);
+            $account->setSecurityAnswer($security_answer);
+            $account->setBlog($blog_name);
 
             $em->persist($account);
             $em->flush();
@@ -184,9 +198,10 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             $output->writeln("weblog successfully created.");
             $question = new Question('Do you want to continue? (y/yes): ');
             $acceptance = $helper->ask($input, $output, $question);
+
             if (!in_array(strtolower($acceptance), ['y', 'yes', null])) {
                 $continue = false;
-            }*/
+            }
         }
 
         $output->writeln("Operation completed");

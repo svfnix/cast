@@ -77,6 +77,27 @@ class Account
      */
     private $posts;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="security_question", type="string", length=255)
+     */
+    private $securityQuestion;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="security_answer", type="string", length=255)
+     */
+    private $securityAnswer;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="blog", type="string", length=255)
+     */
+    private $blog;
+
 
     /**
      * Get id
@@ -270,6 +291,66 @@ class Account
     public function incPosts()
     {
         $this->posts++;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecurityQuestion()
+    {
+        return $this->securityQuestion;
+    }
+
+    /**
+     * @param string $securityQuestion
+     *
+     * @return $this
+     */
+    public function setSecurityQuestion($securityQuestion)
+    {
+        $this->securityQuestion = $securityQuestion;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecurityAnswer()
+    {
+        return $this->securityAnswer;
+    }
+
+    /**
+     * @param string $securityAnswer
+     *
+     * @return $this
+     */
+    public function setSecurityAnswer($securityAnswer)
+    {
+        $this->securityAnswer = $securityAnswer;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBlog()
+    {
+        return $this->blog;
+    }
+
+    /**
+     * @param string $blog
+     *
+     * @return $this
+     */
+    public function setBlog($blog)
+    {
+        $this->blog = $blog;
 
         return $this;
     }
