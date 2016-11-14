@@ -40,6 +40,7 @@ class AppCommand extends ContainerAwareCommand
 
     protected function showCaptcha($content)
     {
+        echo $content;
         $clr_txt  = '1;37m';
         $clr_bg   = '0;30m';
 
