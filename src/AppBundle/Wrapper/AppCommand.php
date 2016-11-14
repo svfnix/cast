@@ -18,6 +18,7 @@ class AppCommand extends ContainerAwareCommand
         $config = [
             'proxy' => [
                 'http' => file_get_contents('proxy'),
+                'https' => file_get_contents('proxy'),
             ],
             'allow_redirects' => false,
             'cookies' => true
