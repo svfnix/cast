@@ -172,7 +172,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             do{
                 $blog_name = "{$blog_username}{$counter}";
                 $this->client->request('POST', 'http://persianblog.ir/dyn/blogname-availability.aspx', [], [], ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'], "b={$blog_name}");
-                $result = $this->client->getResponse()->getContent(); echo $result;
+                $result = $this->client->getResponse()->getContent();
                 $counter++;
             }while($result != 'BLOG_getResult(true);');
 
