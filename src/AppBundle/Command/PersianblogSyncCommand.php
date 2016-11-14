@@ -69,7 +69,7 @@ class PersianblogSyncCommand extends AppCommandPersianblog
         $output->writeln(" - signin to blogfa [".$account->getUsername().".persianblog.ir]");
         $this->signin($account);
 
-        $output->writeln(" - submit new post. wait 10 secs  ...");
+        $output->writeln(" - submit new post.");
         $crawler = $this->client->request('GET', 'http://persianblog.ir/CreatePost.aspx?blogID=' . $account->getBlogId());
 
         $tags = $article->getTags();
@@ -77,7 +77,7 @@ class PersianblogSyncCommand extends AppCommandPersianblog
 
         $form = $crawler->filter('#btnPublish')->first()->form();
         $this->client->submit($form, [
-            'txtTitle' => $article->getTitle(),
+            'TxtTitle' => $article->getTitle(),
             'intrContent' => $content,
             'keyWord1' => array_shift($tags),
             'keyWord2' => array_shift($tags),
