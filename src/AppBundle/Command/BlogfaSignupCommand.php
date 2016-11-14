@@ -37,7 +37,8 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $output->writeln("create blog: {$count}");
 
             $output->writeln(" - create client");
-            $this->client = new Client();
+            
+            $this->startClient();
             $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
 
             $output->writeln(" - grab captcha");

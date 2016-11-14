@@ -66,7 +66,7 @@ class BlogfaSyncCommand extends AppCommandBlogfa
         $em->merge($account);
         $em->flush();
 
-        $this->client = new Client();
+        $this->startClient();
 
         $output->writeln(" - signin to blogfa [".$account->getUsername().".blogfa.com]");
         $this->signin($account);

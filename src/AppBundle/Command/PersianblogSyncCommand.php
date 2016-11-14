@@ -64,7 +64,7 @@ class PersianblogSyncCommand extends AppCommandPersianblog
         $em->merge($account);
         $em->flush();
 
-        $this->client = new Client();
+        $this->startClient();
 
         $output->writeln(" - signin to blogfa [".$account->getUsername().".persianblog.ir]");
         $this->signin($account);

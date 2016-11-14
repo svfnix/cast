@@ -31,7 +31,7 @@ class PersianblogTasksCommand extends AppCommandPersianblog
         $query->setMaxResults(1);
         $account = $query->getSingleResult();
 
-        $this->client = new Client();
+        $this->startClient();
 
         switch ($account->getTask()){
             case 0:

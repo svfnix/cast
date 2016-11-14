@@ -24,7 +24,7 @@ class MinerDigimagCommand extends ContainerAwareCommand
     {
         $output->writeln("Start crawling ...");
 
-        $this->client = new Client();
+        $this->startClient();
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
         $query = $em->createQuery("SELECT s FROM AppBundle:Setting s WHERE s.name = 'digimag_last_crawled_id'");
