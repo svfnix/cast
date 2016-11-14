@@ -28,6 +28,11 @@ class BlogfaSignupCommand extends AppCommandBlogfa
         $count = 0;
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
+
+        $this->startClient();
+        $crawler = $this->client->request('GET', 'http://blogfa.com/');
+        echo $this->client->getResponse()->getContent();
+
         $continue = true;
         while ($continue) {
 
@@ -38,9 +43,8 @@ class BlogfaSignupCommand extends AppCommandBlogfa
 
             $output->writeln(" - create client");
 
-            $this->startClient();
             $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
-echo $this->client->getResponse()->getContent();
+
             $output->writeln(" - grab captcha");
             $this->client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
             $this->showCaptcha($this->client->getResponse()->getContent());
