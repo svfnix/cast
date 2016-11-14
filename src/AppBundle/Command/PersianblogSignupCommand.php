@@ -2,24 +2,23 @@
 
 namespace AppBundle\Command;
 
-use AppBundle\Entity\Account;
-use AppBundle\Entity\Capcha;
-use AppBundle\Entity\FakeBlogPool;
-use AppBundle\Entity\FakeUserPool;
-use AppBundle\Wrapper\AppCommandBlogfa;
+use AppBundle\Wrapper\AppCommandPersianblog;
 use Goutte\Client;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Symfony\Component\DomCrawler\Field\InputFormField;
 
-class BlogfaSignupCommand extends AppCommandBlogfa
+class PersianblogSignupCommand extends AppCommandPersianblog
 {
     protected function configure()
     {
         $this
-            ->setName('blogfa:signup')
-            ->setDescription('new signup in blogfa')
+            ->setName('persianblog:signup')
+            ->setDescription('new signup in persianblog')
         ;
     }
 
@@ -38,11 +37,11 @@ class BlogfaSignupCommand extends AppCommandBlogfa
 
             $output->writeln(" - create client");
             $this->client = new Client();
-            $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
+            $crawler = $this->client->request('GET', 'http://persianblog.ir/Signup.aspx');
 
             $output->writeln(" - grab captcha");
-            $this->client->request('GET', 'http://blogfa.com/captcha.ashx?'. time());
-            $this->showCaptcha($this->client->getResponse()->getContent());
+            $this->client->request('GET', 'http://persianblog.ir/SecurityCode.aspx?rnd='. time());
+            //$this->exportCaptcha($this->client->getResponse()->getContent());
 
             $helper = $this->getHelper('question');
 
@@ -56,11 +55,12 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                     $question = new ConfirmationQuestion('Do you want to refresh captcha? (y/yes): ', false);
                     $acceptance = $helper->ask($input, $output, $question);
                     while (in_array(strtolower($acceptance), ['y', 'yes'])) {
-                        $this->client->request('GET', 'http://blogfa.com/captcha.ashx?' . time());
-                        $this->showCaptcha($this->client->getResponse()->getContent());
+                        $this->client->request('GET', 'http://persianblog.ir/SecurityCode.aspx?rnd='. time());
+                        $this->exportCaptcha($this->client->getResponse()->getContent());
                     }
                 }
             }
+
 
             $output->writeln(" - registring");
 
@@ -83,10 +83,27 @@ class BlogfaSignupCommand extends AppCommandBlogfa
 
                 $blog_username = $user->getUsername();
 
-                $this->client->request('GET', 'http://blogfa.com/checkuser.ashx?u=' . $blog_username . '&rnd=0.' . rand());
+                $domdocument = new \DOMDocument;
+                $form = $crawler->filter('#signup')->first()->form();
+
+                $ff = $domdocument->createElement('input');
+                $ff->setAttribute('name', '__CALLBACKID');
+                $ff->setAttribute('value', '__Page');
+                $field1 = new InputFormField($ff);
+
+                $ff = $domdocument->createElement('input');
+                $ff->setAttribute('name', '__CALLBACKPARAM');
+                $ff->setAttribute('value', $blog_username);
+                $field2 = new InputFormField($ff);
+
+                $form->set($field1);
+                $form->set($field2);
+
+                $this->client->submit($form);
                 $result = $this->client->getResponse()->getContent();
 
-            } while($result != 'free');
+            } while($result != 's0');
+
 
             $blog_password = substr(md5($blog_username), 12, 8);
 
@@ -100,6 +117,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $blog_description = empty($blog_description) ? $blog_title : $blog_description;
 
             $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
+            /*
 
             $form = $crawler->filter('#master_ContentPlaceHolder1_btnSignUp')->first()->form();
             $this->client->submit($form, [
@@ -168,11 +186,10 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $acceptance = $helper->ask($input, $output, $question);
             if (!in_array(strtolower($acceptance), ['y', 'yes', null])) {
                 $continue = false;
-            }
+            }*/
         }
 
         $output->writeln("Operation completed");
-
     }
 
 }

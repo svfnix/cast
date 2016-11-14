@@ -17,7 +17,11 @@ class AppCommand extends ContainerAwareCommand
         return dirname($this->getContainer()->get('kernel')->getRootDir());
     }
 
-    protected function showImage($content)
+    protected function exportCaptcha($captcha){
+        file_put_contents("/var/www/html/captcha.png", $captcha);
+    }
+
+    protected function showCaptcha($content)
     {
         $clr_txt  = '1;37m';
         $clr_bg   = '0;30m';
@@ -50,7 +54,7 @@ class AppCommand extends ContainerAwareCommand
 
         $content = preg_replace('#<a.*?>(.*?)</a>#i', '\1', $content);
         $content = preg_replace_callback('/<img.*?src="([^"]+)"[^>]+>/Si', function($image){
-            return '<img src="'.$image[1].'" style="max-width:96%" />';
+            return '<img src="'.$image[1].'" style="max-width:100%" />';
         }, $content);
 
         return $content;

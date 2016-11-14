@@ -264,4 +264,14 @@ class Account
         return $this;
     }
 
+    /**
+     * @return $this
+     */
+    public function incPosts()
+    {
+        $this->posts++;
+
+        return $this;
+    }
+
 }

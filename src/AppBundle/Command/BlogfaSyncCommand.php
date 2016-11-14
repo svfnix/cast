@@ -59,6 +59,8 @@ class BlogfaSyncCommand extends AppCommandBlogfa
             $output->writeln(" - article found: " . $article->gettitle());
             $account->setLastUpdate(new \DateTime());
             $content = $this->clearContent($article->getContent());
+
+            $account->incPosts();
         }
 
         $em->merge($account);
