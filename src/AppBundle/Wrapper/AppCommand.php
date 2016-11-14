@@ -49,7 +49,7 @@ class AppCommand extends ContainerAwareCommand
     protected function clearContent($content){
 
         $content = preg_replace('#<a.*?>(.*?)</a>#i', '\1', $content);
-        $content = preg_replace_callback('/<img src="([^"]+)"[^>]+>/Si', function($image){
+        $content = preg_replace_callback('/<img.*?src="([^"]+)"[^>]+>/Si', function($image){
             return '<img src="'.$image[1].'" style="max-width:96%" />';
         }, $content);
 

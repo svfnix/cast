@@ -58,6 +58,9 @@ class MinerDigimagCommand extends ContainerAwareCommand
                 });
 
                 $content = implode("\n", $html);
+                $content = preg_replace_callback('/<img.*?data-lazy-src="([^"]+)"[^>]+>/Si', function($image){
+                    return '<img src="'.$image[1].'"/>';
+                }, $content);
 
 
                 $tags = [];
