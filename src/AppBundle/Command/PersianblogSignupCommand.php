@@ -41,7 +41,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
 
             $output->writeln(" - grab captcha");
             $this->client->request('GET', 'http://persianblog.ir/SecurityCode.aspx?rnd='. time());
-            //$this->exportCaptcha($this->client->getResponse()->getContent());
+            $this->exportCaptcha($this->client->getResponse()->getContent(), 'captcha.jpg');
 
             $helper = $this->getHelper('question');
 
@@ -56,7 +56,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                     $acceptance = $helper->ask($input, $output, $question);
                     while (in_array(strtolower($acceptance), ['y', 'yes'])) {
                         $this->client->request('GET', 'http://persianblog.ir/SecurityCode.aspx?rnd='. time());
-                        $this->exportCaptcha($this->client->getResponse()->getContent());
+                        $this->exportCaptcha($this->client->getResponse()->getContent(), 'captcha.jpg');
                     }
                 }
             }
@@ -109,11 +109,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
 
             $blog_email = $user->getEmail();
             $blog_email = explode('@', $blog_email);
-            $blog_email = $blog_email[0] . '@yourinbox.ir';
-
-            $blog_title = $blog->getTitle();
-
-            $blog_description = $blog->getDescription();
+            $blog_email = $this->getEmailAddress($blog_email[0]);
 
             $blog_author = implode(' ', [$user->getFname(), $user->getLname()]);
             $security_question = rand(1, 9);
@@ -131,7 +127,7 @@ class PersianblogSignupCommand extends AppCommandPersianblog
                 'TxtSecurityCode' => $code,
                 'ChkTerms' => 'on'
             ]);
-
+            file_put_contents('result.html', $this->client->getResponse()->getContent());
             $output->writeln(" - user created {$blog_username} : {$blog_password}");
 
             $output->writeln(" - check mailbox");
@@ -174,10 +170,12 @@ class PersianblogSignupCommand extends AppCommandPersianblog
             $counter = '';
             do{
                 $blog_name = "{$blog_username}{$counter}";
-                $this->client->request('POST', 'http://persianblog.ir/dyn/blogname-availability.aspx', ['b' => $blog_name]);
+                $this->client->request('POST', 'http://persianblog.ir/dyn/blogname-availability.aspx', [], [], ['HTTP_CONTENT_TYPE' => 'application/x-www-form-urlencoded'], "b={$blog_name}");
                 $result = $this->client->getResponse()->getContent();
                 $counter++;
             }while($result != 'BLOG_getResult(true);');
+
+            $blog_title = $blog->getTitle();
 
             $account = new Account();
             $account->setService(self::service);

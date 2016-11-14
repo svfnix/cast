@@ -92,7 +92,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
 
             $blog_email = $user->getEmail();
             $blog_email = explode('@', $blog_email);
-            $blog_email = $blog_email[0] . '@yourinbox.ir';
+            $blog_email = $this->getEmailAddress($blog_email[0]);
 
             $blog_title = $blog->getTitle();
 
