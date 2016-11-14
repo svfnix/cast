@@ -29,8 +29,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
 
-        $this->startClient();
-        $crawler = $this->client->request('GET', 'http://blogfa.com/');
+        $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
         echo $this->client->getResponse()->getContent();
 
         $continue = true;
