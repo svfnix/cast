@@ -3,13 +3,12 @@
 namespace AppBundle\Command;
 
 use Goutte\Client;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PersianblogSyncCommand extends ContainerAwareCommand
+class PersianblogSyncCommand extends AppCommandPersianblog
 {
     protected function configure()
     {
