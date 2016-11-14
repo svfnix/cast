@@ -17,7 +17,8 @@ class AppCommand extends ContainerAwareCommand
     {
         $config = [
             'proxy' => [
-                'http' => '127.0.0.1:8118'
+                'http' => '127.0.0.1:8118',
+                'https' => '127.0.0.1:8118'
             ]
         ];
         $this->client = new Client();
