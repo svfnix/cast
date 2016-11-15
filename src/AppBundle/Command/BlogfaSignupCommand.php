@@ -163,6 +163,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $account->setSecurityQuestion('');
             $account->setSecurityAnswer('');
             $account->setBlog($blog_username);
+            $account->setBlogId(0);
 
             $em->persist($account);
             $em->flush();
