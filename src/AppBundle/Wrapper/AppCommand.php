@@ -17,24 +17,16 @@ class AppCommand extends ContainerAwareCommand
 
     protected function startClient()
     {
-        $this->client = new Client();
-
-        $gclient = new GuzzleClient([
-            'allow_redirects' => true,
-            'cookies' => true,
-            'headers' => [
-                'User-Agent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0'
-            ]
-        ]);
-        $this->client->getClient()->setCookieJar(
-            $this->client->getClient()->getConfig('cookies')->fromArray(
-                [
-                    '__cfduid' => 'd94f50cd67103e2ae2d0440b68c2f8c431479200138',
-                    'cf_clearance' => '765186d81a807991a36da6f25859849472d4f474-1479200152-3600',
-                ],
-                '.blogfa.com'
-            )
+        $this->client = new Client([
+            'HTTP_USER_AGENT' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:49.0) Gecko/20100101 Firefox/49.0',
+            'Upgrade-Insecure-Requests' => 1
+            ], null,
+            CookieJar::fromArray([
+                '__cfduid' => 'd94f50cd67103e2ae2d0440b68c2f8c431479200138',
+                'cf_clearance' => '765186d81a807991a36da6f25859849472d4f474-1479200152-3600',
+            ], '.blogfa.com')
         );
+
         $this->client->request('GET', 'http://blogfa.com');
         file_put_contents('client', print_r($this->client, 1));
     }
