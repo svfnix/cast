@@ -20,7 +20,7 @@ class AppCommand extends ContainerAwareCommand
     {
         $CookieJar = new CookieJar();
         $cookie1 = new Cookie('__cfduid', 'd94f50cd67103e2ae2d0440b68c2f8c431479200138', null, '/', '.blogfa.com');
-        $cookie2 = new Cookie('cf_clearance', '765186d81a807991a36da6f25859849472d4f474-1479200152-3600', null, '/', '.blogfa.com');
+        $cookie2 = new Cookie('cf_clearance', '574980182f9e3eae9817a3910b7f25b5a63c297e-1479204044-3600', null, '/', '.blogfa.com');
 
         $CookieJar->set($cookie1);
         $CookieJar->set($cookie2);
