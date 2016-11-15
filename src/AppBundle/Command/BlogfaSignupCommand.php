@@ -28,11 +28,6 @@ class BlogfaSignupCommand extends AppCommandBlogfa
         $count = 0;
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
-
-        $this->startClient();
-        $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
-        echo $this->client->getResponse()->getContent();
-        die();
         $continue = true;
         while ($continue) {
 
