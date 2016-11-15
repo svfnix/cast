@@ -32,7 +32,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
         $this->startClient();
         $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
         echo $this->client->getResponse()->getContent();
-
+        die();
         $continue = true;
         while ($continue) {
 
