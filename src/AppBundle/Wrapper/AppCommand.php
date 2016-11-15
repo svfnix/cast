@@ -40,9 +40,45 @@ class AppCommand extends ContainerAwareCommand
         return dirname($this->getContainer()->get('kernel')->getRootDir());
     }
 
-    protected function getEmailAddress($uname)
+    protected function getEmailAddress()
     {
         return 'boostani1988@gmail.com';
+    }
+
+    protected function getRandomEmailAddress($uname)
+    {
+        $rand = rand(0, 9);
+        switch ($rand){
+            case 0:
+                return "{$uname}@tgdir.ir";
+                break;
+            case 1:
+                return "{$uname}@telechannels.ir";
+                break;
+            case 2:
+                return "{$uname}@tgchannels.ir";
+                break;
+            case 3:
+                return "{$uname}@tfgo.ir";
+                break;
+            case 4:
+                return "{$uname}@nikpikst.ir";
+                break;
+            case 5:
+                return "{$uname}@telegram-stickers.ir";
+                break;
+            case 6:
+                return "{$uname}@sticker-download.ir";
+                break;
+            case 7:
+                return "{$uname}@channels-list.ir";
+                break;
+            case 8:
+                return "{$uname}@telegroup.ir";
+                break;
+            case 9:
+                return "{$uname}@telegroups.ir";
+        }
     }
 
     protected function exportCaptcha($captcha, $name='captcha.png'){
