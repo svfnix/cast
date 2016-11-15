@@ -19,11 +19,13 @@ class AppCommand extends ContainerAwareCommand
         $this->client = new Client();
         $this->client->getClient()->getConfig('cookies')->fromArray(
             [
-                '__cfduid' => 'd3a489e9ee1a4b2c8a586f4a3b0f802191473057225',
-                'cf_clearance' => '5ecf4269dfdb9781d77bf96f7e7b0bbe36434492-1479198284-3600',
+                '__cfduid' => 'd94f50cd67103e2ae2d0440b68c2f8c431479200138',
+                'cf_clearance' => '765186d81a807991a36da6f25859849472d4f474-1479200152-3600',
             ],
             '.blogfa.com'
         );
+        $this->client->request('GET', 'http://blogfa.com');
+        file_put_contents('client', print_r($this->client, 1));
     }
 
     protected function getRoot()
