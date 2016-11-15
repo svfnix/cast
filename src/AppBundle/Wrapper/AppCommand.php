@@ -15,12 +15,6 @@ class AppCommand extends ContainerAwareCommand
 
     protected function startClient()
     {
-        $config = [
-            'proxy' => [
-                'http' => '127.0.0.1:8118',
-                'https' => '127.0.0.1:8118'
-            ]
-        ];
         $this->client = new Client();
     }
 
