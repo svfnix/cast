@@ -5,6 +5,7 @@ namespace AppBundle\Wrapper;
 use Goutte\Client;
 use GuzzleHttp\Cookie\CookieJar;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use GuzzleHttp\Client as GuzzleClient;
 
 class AppCommand extends ContainerAwareCommand
 {
@@ -17,12 +18,16 @@ class AppCommand extends ContainerAwareCommand
     protected function startClient()
     {
         $this->client = new Client();
-        $this->client->getClient()->getConfig('cookies')->fromArray(
-            [
-                '__cfduid' => 'd94f50cd67103e2ae2d0440b68c2f8c431479200138',
-                'cf_clearance' => '765186d81a807991a36da6f25859849472d4f474-1479200152-3600',
-            ],
-            '.blogfa.com'
+
+        $gclient = new GuzzleClient(array('allow_redirects' => true, 'cookies' => true));
+        $this->client->getClient()->setCookieJar(
+            $this->client->getClient()->getConfig('cookies')->fromArray(
+                [
+                    '__cfduid' => 'd94f50cd67103e2ae2d0440b68c2f8c431479200138',
+                    'cf_clearance' => '765186d81a807991a36da6f25859849472d4f474-1479200152-3600',
+                ],
+                '.blogfa.com'
+            )
         );
         $this->client->request('GET', 'http://blogfa.com');
         file_put_contents('client', print_r($this->client, 1));
