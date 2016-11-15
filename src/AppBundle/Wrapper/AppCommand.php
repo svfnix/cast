@@ -3,6 +3,7 @@ namespace AppBundle\Wrapper;
 
 
 use Goutte\Client;
+use GuzzleHttp\Cookie\CookieJar;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 class AppCommand extends ContainerAwareCommand
@@ -16,6 +17,13 @@ class AppCommand extends ContainerAwareCommand
     protected function startClient()
     {
         $this->client = new Client();
+        $this->client->getClient()->getConfig('cookies')->fromArray(
+            [
+                '__cfduid' => 'd3a489e9ee1a4b2c8a586f4a3b0f802191473057225',
+                'cf_clearance' => '5ecf4269dfdb9781d77bf96f7e7b0bbe36434492-1479198284-3600',
+            ],
+            '.blogfa.com'
+        );
     }
 
     protected function getRoot()
