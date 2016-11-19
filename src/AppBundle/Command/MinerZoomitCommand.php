@@ -76,7 +76,6 @@ class MinerZoomitCommand extends AppCommand
                     $article->setImage($image);
                     $article->setSource($link);
                     $article->setTags($tags);
-
                     $em->persist($article);
                     $em->flush();*/
 
