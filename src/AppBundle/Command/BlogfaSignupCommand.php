@@ -28,11 +28,6 @@ class BlogfaSignupCommand extends AppCommandBlogfa
         $count = 0;
         $em = $this->getContainer()->get('doctrine')->getEntityManager();
 
-
-        $this->startClient();
-        $crawler = $this->client->request('GET', 'http://blogfa.com/newblog.aspx?');
-        echo $this->client->getResponse()->getContent();
-
         $continue = true;
         while ($continue) {
 
@@ -98,7 +93,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
 
             $blog_email = $user->getEmail();
             $blog_email = explode('@', $blog_email);
-            $blog_email = $this->getEmailAddress($blog_email[0]);
+            $blog_email = $blog_email[0].substr($blog_username, 0, 1).substr($blog_username, -1)."@gmail.com";
 
             $blog_title = $blog->getTitle();
 
@@ -115,7 +110,7 @@ class BlogfaSignupCommand extends AppCommandBlogfa
                 'master$ContentPlaceHolder1$txtTitle' => $blog_title,
                 'master$ContentPlaceHolder1$txtAuthor' => $blog_author,
                 'master$ContentPlaceHolder1$txtDescription' => $blog_description,
-                'master$ContentPlaceHolder1$txtPEmail' => $blog_email,
+                'master$ContentPlaceHolder1$txtPEmail' => $this->getEmailAddress(),
                 'txtCaptcha' => $code
             ]);
 
@@ -168,6 +163,19 @@ class BlogfaSignupCommand extends AppCommandBlogfa
             $account->setSecurityQuestion('');
             $account->setSecurityAnswer('');
             $account->setBlog($blog_username);
+            $account->setBlogId(0);
+
+            $output->writeln(" - changing email");
+            $this->signin($account);
+            $crawler = $this->client->request('GET', 'http://blogfa.com/Desktop/Options.aspx?');
+            $link = $crawler->filter('.content')->filter('a')->eq(6)->attr('href');
+
+            $crawler = $this->client->request('GET', $link);
+            $form = $crawler->filter('#btnOk')->first()->form();
+            $this->client->submit($form, [
+                'txtOldPassword' => $blog_password,
+                'txtNewEmail' => $blog_email
+            ]);
 
             $em->persist($account);
             $em->flush();
