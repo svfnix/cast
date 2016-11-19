@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MinerZoomitCommand extends ContainerAwareCommand
+class MinerZoomitCommand extends AppCommand
 {
     protected function configure()
     {
@@ -80,7 +80,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
                         $this->getContainer()->getParameter('blog_pass')
                     );
 
-                    $file_name = 'var/cache/zoomit.img';
+                    $file_name = $this->getRoot() . '/var/cache/zoomit.img';
                     file_put_contents($file_name, file_get_contents($image));
                     if (in_array(exif_imagetype($file_name), [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG])){
 
