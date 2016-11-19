@@ -4,6 +4,7 @@ namespace AppBundle\Command;
 
 use AppBundle\Entity\Article;
 use AppBundle\Wrapper\AppCommand;
+use AppBundle\Wrapper\Wordpress;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
