@@ -88,7 +88,7 @@ class MinerZoomitCommand extends AppCommand
 
                         $media = $client->uploadFile(
                             'zoomit-' . time(),
-                            mime_content_type($image),
+                            mime_content_type($file_name),
                             file_get_contents($file_name),
                             true
                         );
