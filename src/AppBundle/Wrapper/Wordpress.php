@@ -9,6 +9,8 @@
 namespace AppBundle\Wrapper;
 
 
+use Exception;
+
 class Wordpress
 {
     private $username;
@@ -827,7 +829,7 @@ class Wordpress
         if (is_array($response) && xmlrpc_is_fault($response)) {
             $this->error = ("xmlrpc: {$response['faultString']} ({$response['faultCode']})");
             $this->logError();
-            throw new Exception\XmlrpcException($response['faultString'], $response['faultCode']);
+            throw new Exception($response['faultString'], $response['faultCode']);
         }
         return $response;
     }
@@ -889,7 +891,7 @@ class Wordpress
             $this->error = "curl: {$message} ({$code})";
             $this->logError();
             curl_close($ch);
-            throw new Exception\NetworkException($message, $code);
+            throw new Exception($message, $code);
         }
         $httpStatusCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($httpStatusCode >= 400) {
@@ -898,7 +900,7 @@ class Wordpress
             $this->error = "http: {$message} ({$code})";
             $this->logError();
             curl_close($ch);
-            throw new Exception\NetworkException($message, $code);
+            throw new Exception($message, $code);
         }
         curl_close($ch);
         return $response;
@@ -944,12 +946,12 @@ class Wordpress
                 $error       = $error ? trim($error['message']) : "error";
                 $this->error = "file_get_contents: {$error}";
                 $this->logError();
-                throw new Exception\NetworkException($error, 127);
+                throw new Exception($error, 127);
             }
         } catch (\Exception $ex) {
             $this->error = ("file_get_contents: {$ex->getMessage()} ({$ex->getCode()})");
             $this->logError();
-            throw new Exception\NetworkException($ex->getMessage(), $ex->getCode());
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
         return $file;
     }
