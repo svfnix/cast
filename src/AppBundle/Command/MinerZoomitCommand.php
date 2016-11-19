@@ -64,7 +64,7 @@ class MinerZoomitCommand extends ContainerAwareCommand
 
                     $tags = implode(',', $tags);
 
-                    $article = new Article();
+                    /*$article = new Article();
                     $article->setTitle($title);
                     $article->setContent($content);
                     $article->setImage($image);
@@ -72,10 +72,41 @@ class MinerZoomitCommand extends ContainerAwareCommand
                     $article->setTags($tags);
 
                     $em->persist($article);
-                    $em->flush();
+                    $em->flush();*/
 
-                    if ($article_id > $setting->getValue()) {
-                        $setting->setValue($article_id);
+                    $client = new Wordpress(
+                        $this->getContainer()->getParameter('blog_xmlrpc'),
+                        $this->getContainer()->getParameter('blog_user'),
+                        $this->getContainer()->getParameter('blog_pass')
+                    );
+
+                    $file_name = 'var/cache/zoomit.img';
+                    file_put_contents($file_name, file_get_contents($image));
+                    if (in_array(exif_imagetype($file_name), [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG])){
+
+                        $media = $client->uploadFile(
+                            'zoomit-' . time(),
+                            mime_content_type($image),
+                            file_get_contents($file_name),
+                            true
+                        );
+
+                        $client->newPost($title, $content, [
+                            'post_status' => 'publish',
+                            'post_excerpt' => 'salam salam',
+                            'tags_input' => $tags,
+                            'post_thumbnail' => $media['id'],
+                            'custom_fields' => [
+                                ['key' => '_bunyad_featured_post', 'value' => '1'],
+                                ['key' => 'source', 'value' => 'زومیت'],
+                                ['key' => 'source_url', 'value' => $link]
+                            ],
+                            'terms' => array('category' => [35])
+                        ]);
+
+                        if ($article_id > $setting->getValue()) {
+                            $setting->setValue($article_id);
+                        }
                     }
 
                 }

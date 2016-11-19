@@ -50,3 +50,10 @@
 # Backup entities generated with doctrine:generate:entities command
 */Entity/*~
 
+.idea/
+captcha/
+db/
+post.jpg
+result.html
+src/AppBundle/Entity/Service.php~
+src/AppBundle/Entity/ServiceAccount.php~
