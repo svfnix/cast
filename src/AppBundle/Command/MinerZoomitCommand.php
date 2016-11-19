@@ -57,7 +57,11 @@ class MinerZoomitCommand extends AppCommand
 
                     $client = new Client();
                     $crawler = $client->request('GET', $link);
+                    $summery = $crawler->filter('.article-summery')->first()->text();
+
                     $content = $crawler->filter('.article-section')->first()->html();
+                    $content = preg_replace('#<div.*?مقالات مرتبط.*?</div>#', '', $content);
+                    $content = $this->clearContent($content);
 
                     $tags = [];
                     $crawler->filter('.article-tag-row')->filter('a')->each(function($a) use(&$tags){
@@ -95,7 +99,7 @@ class MinerZoomitCommand extends AppCommand
 
                         $client->newPost($title, $content, [
                             'post_status' => 'publish',
-                            'post_excerpt' => 'salam salam',
+                            'post_excerpt' => $summery,
                             'tags_input' => $tags,
                             'post_thumbnail' => $media['id'],
                             'custom_fields' => [
