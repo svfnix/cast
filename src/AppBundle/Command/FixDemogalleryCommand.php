@@ -23,31 +23,28 @@ class FixDemogalleryCommand extends AppCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $conn = $this->get('database_connection');
+        $conn = $this->getContainer()->get('database_connection');
         $posts = $conn->fetchAll('SELECT * FROM `iwpf_posts`');
+        foreach($posts as $post){
+            $html = $post->post_content;
+            $crawler = new Crawler($html);
+            $crawler->filter('.demo-gallery')->each(function(Crawler $base, $i) use (&$html){
 
-        $this->startClient();
-        $crawler = $this->client->request('GET', 'http://invaroonvar.com/%d8%aa%d8%b5%d8%a7%d9%88%db%8c%d8%b1%db%8c-%d8%a7%d8%b2-%d8%b4%db%8c%d8%a7%d8%a6%d9%88%d9%85%db%8c-%d9%85%db%8c-%d9%85%db%8c%da%a9%d8%b3-%d8%af%d8%b1-%d8%b1%d9%86%da%af%e2%80%8c-%d8%b3%d9%81%db%8c/#prettyPhoto');
-        $html = $this->client->getResponse()->getContent();
+                $nodes_li = [];
+                $base->filter('li')->each(function($li, $j) use (&$nodes_li){
+                    $nodes_li[] = $li;
+                });
 
-        $crawler->filter('.demo-gallery')->each(function(Crawler $base, $i) use (&$html){
+                $pretty_photo = [];
+                foreach($nodes_li as $node){
+                    $img = $node->filter('img')->first();
+                    $pretty_photo [] = '<li><a rel="prettyPhoto" href="'.$node->attr('data-src').'" title="'.strip_tags($node->attr('data-sub-html')).'"><img src="'.$img->attr('src').'" alt="'.$img->attr('title').'" title="'.preg_replace('#[a-zA-Z0-9\s]+#Si', ' ', $img->attr('alt')).'"/></a></li>';
+                }
 
-            $nodes_li = [];
-            $base->filter('li')->each(function($li, $j) use (&$nodes_li){
-                $nodes_li[] = $li;
+                $html = str_replace($base->html(), '<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>', $html);
             });
-
-            $pretty_photo = [];
-            foreach($nodes_li as $node){
-                $img = $node->filter('img')->first();
-                $pretty_photo [] = '<li><a rel="prettyPhoto" href="'.$node->attr('data-src').'" title="'.strip_tags($node->attr('data-sub-html')).'"><img src="'.$img->attr('src').'" alt="'.$img->attr('title').'" title="'.preg_replace('#[a-zA-Z0-9\s]+#Si', ' ', $img->attr('alt')).'"/></a></li>';
-            }
-
-            $html = str_replace($base->html(), '<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>', $html);
-        });
-
-        echo $html;
-
+            echo $html;
+        }
     }
 
 }
