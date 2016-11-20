@@ -97,7 +97,7 @@ class MinerDigiatoCommand extends AppCommand
                         'post_thumbnail' => $media['id'],
                         'custom_fields' => [
                             ['key' => '_bunyad_featured_post', 'value' => '1'],
-                            ['key' => 'source', 'value' => 'زومیت'],
+                            ['key' => 'source', 'value' => 'دیجیاتو'],
                             ['key' => 'source_url', 'value' => $link]
                         ],
                         'terms' => array('category' => [35])
