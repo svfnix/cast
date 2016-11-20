@@ -43,7 +43,6 @@ class FixDemogalleryCommand extends AppCommand
                         $pretty_photo [] = '<li><a rel="prettyPhoto" href="'.$node->attr('data-src').'" title="'.strip_tags($node->attr('data-sub-html')).'"><img src="'.$img->attr('src').'" alt="'.$img->attr('title').'" title="'.preg_replace('#[a-zA-Z0-9\s]+#Si', ' ', $img->attr('alt')).'"/></a></li>';
                     }
 
-                    $base->getNode(0)->addHtmlContent('<ul class="sm-gallery">'.implode("", $pretty_photo).'</ul>');
                 });
 
                 $html = $crawler->html();
