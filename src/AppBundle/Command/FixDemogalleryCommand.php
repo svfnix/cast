@@ -41,7 +41,7 @@ class FixDemogalleryCommand extends AppCommand
                 }
 
                 $base->clear();
-                $base->addContent('<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>');
+                $base->addHtmlContent('<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>');
             });
 
             $html = $crawler->html();
