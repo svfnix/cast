@@ -43,7 +43,10 @@ class FixDemogalleryCommand extends AppCommand
 
                 $html = str_replace($base->html(), '<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>', $html);
             });
-            echo $html;
+
+            if($post['post_content'] != $html) {
+                echo $html;
+            }
         }
     }
 
