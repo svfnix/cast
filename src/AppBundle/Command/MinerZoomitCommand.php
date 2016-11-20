@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 class MinerZoomitCommand extends AppCommand
 {
@@ -20,6 +21,27 @@ class MinerZoomitCommand extends AppCommand
             ->setName('miner:zoomit')
             ->setDescription('crawl zoomit')
         ;
+    }
+
+    private function clean($content){
+
+        $content = $this->clearContent($content);
+
+        if (!empty($content)) {
+            $content = preg_replace_callback(
+                '/<div class=\"demo-gallery\">(.*?)<\/div>/si',
+                function ($find) {
+                    $crawler = new Crawler($find[0]);
+                    $pretty_photo = $crawler->filter('li')->each(function ($li, $j) {
+                        $img = $li->filter('img')->first();
+                        return '<li><a rel="prettyPhoto" href="' . $li->attr('data-src') . '"><img src="' . $img->attr('src') . '" width="100%"/></a></li>';
+                    });
+
+                    return '<ul class="sm-gallery">' . implode("\n", $pretty_photo) . '</ul>';
+                }, $content);
+        }
+
+        return $content;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -61,7 +83,7 @@ class MinerZoomitCommand extends AppCommand
 
                     $content = $crawler->filter('.article-section')->first()->html();
                     $content = preg_replace('#<div.*?مقالات مرتبط.*?</div>#', '', $content);
-                    $content = $this->clearContent($content);
+                    $content = $this->clean($content);
 
                     $tags = [];
                     $crawler->filter('.article-tag-row')->filter('a')->each(function($a) use(&$tags){
