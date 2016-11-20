@@ -51,5 +51,4 @@ class FixDemogalleryCommand extends AppCommand
             }
         }
     }
-
 }
