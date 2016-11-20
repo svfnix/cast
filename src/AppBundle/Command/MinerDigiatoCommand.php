@@ -3,6 +3,8 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\Article;
+use AppBundle\Wrapper\AppCommand;
+use AppBundle\Wrapper\Wordpress;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -10,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MinerDigiatoCommand extends ContainerAwareCommand
+class MinerDigiatoCommand extends AppCommand
 {
     protected function configure()
     {
@@ -49,7 +51,10 @@ class MinerDigiatoCommand extends ContainerAwareCommand
 
                 $client = new Client();
                 $crawler = $client->request('GET', $link);
+
                 $content = $crawler->filter('.article-content')->first()->html();
+                $content = $this->clearContent($content);
+
                 $summery = $crawler->filter('.article-content')->filter('p')->first()->text();
 
                 $tags = [];
