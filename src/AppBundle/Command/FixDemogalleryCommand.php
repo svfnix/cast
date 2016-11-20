@@ -3,6 +3,7 @@
 namespace AppBundle\Command;
 
 use AppBundle\Wrapper\AppCommand;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use PhpImap\Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,7 +50,7 @@ class FixDemogalleryCommand extends AppCommand
                 if(strpos($html, 'sm-gallery')) {
                     echo $html;
                 }
-            } catch (Exception $e){
+            } catch (InvalidArgumentException $e){
                 echo $e->getMessage();
             }
         }
