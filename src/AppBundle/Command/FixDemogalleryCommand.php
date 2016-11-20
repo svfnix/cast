@@ -23,7 +23,7 @@ class FixDemogalleryCommand extends AppCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $conn = $this->getContainer()->get('doctrine.dbal.blog_connection');
+        $conn = $this->get('database_connection');
         $posts = $conn->fetchAll('SELECT * FROM `iwpf_posts`');
 
         $this->startClient();
