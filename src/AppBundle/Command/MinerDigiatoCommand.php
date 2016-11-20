@@ -100,7 +100,7 @@ class MinerDigiatoCommand extends AppCommand
                             ['key' => 'source', 'value' => 'دیجیاتو'],
                             ['key' => 'source_url', 'value' => $link]
                         ],
-                        'terms' => array('category' => [35])
+                        'terms' => array('category' => [128])
                     ]);
 
                     if ($article_id > $setting->getValue()) {
