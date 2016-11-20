@@ -26,7 +26,7 @@ class FixDemogalleryCommand extends AppCommand
         $conn = $this->getContainer()->get('database_connection');
         $posts = $conn->fetchAll('SELECT * FROM `iwpf_posts`');
         foreach($posts as $post){
-            $html = $post->post_content;
+            $html = $post['post_content'];
             $crawler = new Crawler($html);
             $crawler->filter('.demo-gallery')->each(function(Crawler $base, $i) use (&$html){
 
