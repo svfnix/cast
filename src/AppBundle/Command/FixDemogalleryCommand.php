@@ -3,7 +3,8 @@
 namespace AppBundle\Command;
 
 use AppBundle\Wrapper\AppCommand;
-use Doctrine\Instantiator\Exception\InvalidArgumentException;
+use DOMDocument;
+use InvalidArgumentException;
 use PhpImap\Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -27,31 +28,27 @@ class FixDemogalleryCommand extends AppCommand
 
         $conn = $this->getContainer()->get('database_connection');
         $posts = $conn->fetchAll('SELECT * FROM `iwpf_posts`');
-        foreach($posts as $post){
-            try{
-                $crawler = new Crawler($post['post_content']);
-                $crawler->filter('.demo-gallery')->each(function($base, $i){
 
-                    $nodes_li = [];
-                    $base->filter('li')->each(function($li, $j) use (&$nodes_li){
-                        $nodes_li[] = $li;
-                    });
+        foreach($posts as $post) {
 
-                    $pretty_photo = [];
-                    foreach($nodes_li as $node){
-                        $img = $node->filter('img')->first();
-                        $pretty_photo [] = '<li><a rel="prettyPhoto" href="'.$node->attr('data-src').'" title="'.strip_tags($node->attr('data-sub-html')).'"><img src="'.$img->attr('src').'" alt="'.$img->attr('title').'" title="'.preg_replace('#[a-zA-Z0-9\s]+#Si', ' ', $img->attr('alt')).'"/></a></li>';
-                    }
+            if (!empty($post['post_content'])) {
+                $html = preg_replace_callback(
+                    '/<div class=\"demo-gallery\">(.*?)<\/div>/si',
+                    function ($find) {
+                        $crawler = new Crawler($find[0]);
+                        $pretty_photo = $crawler->filter('li')->each(function ($li, $j) {
+                            $img = $li->filter('img')->first();
+                            return '<li><a rel="prettyPhoto" href="' . $li->attr('data-src') . '"><img src="' . $img->attr('src') . '" width="100%"/></a></li>';
+                        });
 
-                });
+                        return '<ul class="sm-gallery">' . implode("\n", $pretty_photo) . '</ul>';
+                    }, $post['post_content']);
 
-                $html = $crawler->html();
-                if(strpos($html, 'sm-gallery')) {
-                    echo $html;
+                if($html != $post['post_content']){
+                    $conn->executeUpdate('UPDATE `iwpf_posts` SET `post_content` = ? WHERE id = ?', array($html, $post['ID']));
                 }
-            } catch (InvalidArgumentException $e){
-                echo $e->getMessage();
             }
         }
+
     }
 }
