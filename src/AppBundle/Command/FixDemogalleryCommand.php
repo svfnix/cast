@@ -27,7 +27,7 @@ class FixDemogalleryCommand extends AppCommand
         $posts = $conn->fetchAll('SELECT * FROM `iwpf_posts`');
         foreach($posts as $post){
             $crawler = new Crawler($post['post_content']);
-            $crawler->filter('.demo-gallery')->each(function(Crawler $base, $i) use (&$html){
+            $crawler->filter('.demo-gallery')->each(function(&$base, $i){
 
                 $nodes_li = [];
                 $base->filter('li')->each(function($li, $j) use (&$nodes_li){
@@ -40,7 +40,7 @@ class FixDemogalleryCommand extends AppCommand
                     $pretty_photo [] = '<li><a rel="prettyPhoto" href="'.$node->attr('data-src').'" title="'.strip_tags($node->attr('data-sub-html')).'"><img src="'.$img->attr('src').'" alt="'.$img->attr('title').'" title="'.preg_replace('#[a-zA-Z0-9\s]+#Si', ' ', $img->attr('alt')).'"/></a></li>';
                 }
 
-                $base->addHtmlContent('<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>');
+                $base->getNode(0)->addHtmlContent('<ul class="sm-gallery">'.implode("\n", $pretty_photo).'</ul>');
             });
 
             $html = $crawler->html();
