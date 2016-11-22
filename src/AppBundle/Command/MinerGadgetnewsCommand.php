@@ -20,6 +20,35 @@ class MinerGadgetnewsCommand extends ContainerAwareCommand
         ;
     }
 
+    private function clean($content){
+
+        $content = $this->clearContent($content);
+
+        if (!empty($content)) {
+
+            $content = preg_replace_callback(
+                '/<div class=\"gallery-images\">(.*?)<\/div>/si',
+                function ($find) {
+                    $crawler = new Crawler($find[0]);
+                    $pretty_photo = $crawler->filter('a')->each(function ($a, $j) {
+                        $img = $a->filter('img')->first();
+                        return '<li><a rel="prettyPhoto" href="' . $a->attr('href') . '"><img src="' . $img->attr('src') . '" width="100%"/></a></li>';
+                    });
+
+                    return '<ul class="sm-gallery">' . implode("\n", $pretty_photo) . '</ul>';
+                }, $content);
+
+            $content = preg_replace_callback(
+                '/<div class=\"source-link\">(.*?)<\/div>/si',
+                function ($find) {
+                    return '';
+                }, $content);
+
+        }
+
+        return $content;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln("Start crawling ...");
@@ -55,7 +84,11 @@ class MinerGadgetnewsCommand extends ContainerAwareCommand
 
                 $client = new Client();
                 $crawler = $client->request('GET', $link);
+                $summery = $crawler->filter('.entry')->filter('p')->first()->text();
+                
                 $content = $crawler->filter('.entry')->first()->html();
+                $content = $this->clean($content);
+
 
                 $tags = [];
                 $crawler->filter('.post-tag')->filter('a')->each(function($a) use(&$tags){
@@ -64,7 +97,7 @@ class MinerGadgetnewsCommand extends ContainerAwareCommand
 
                 $tags = implode(',', $tags);
 
-                $article = new Article();
+                /*$article = new Article();
                 $article->setTitle($title);
                 $article->setContent($content);
                 $article->setImage($image);
@@ -72,10 +105,41 @@ class MinerGadgetnewsCommand extends ContainerAwareCommand
                 $article->setTags($tags);
 
                 $em->persist($article);
-                $em->flush();
+                $em->flush();*/
 
-                if ($article_id > $setting->getValue()) {
-                    $setting->setValue($article_id);
+                $client = new Wordpress(
+                    $this->getContainer()->getParameter('blog_xmlrpc'),
+                    $this->getContainer()->getParameter('blog_user'),
+                    $this->getContainer()->getParameter('blog_pass')
+                );
+
+                $file_name = $this->getRoot() . '/var/cache/gadgetnews.img';
+                file_put_contents($file_name, file_get_contents($image));
+                if (in_array(exif_imagetype($file_name), [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG])){
+
+                    $media = $client->uploadFile(
+                        'gadgetnews-' . time() . '-' . basename($image),
+                        mime_content_type($file_name),
+                        file_get_contents($file_name),
+                        true
+                    );
+
+                    $client->newPost($title, $content, [
+                        'post_status' => 'publish',
+                        'post_excerpt' => $summery,
+                        'tags_input' => $tags,
+                        'post_thumbnail' => $media['id'],
+                        'custom_fields' => [
+                            ['key' => '_bunyad_featured_post', 'value' => '1'],
+                            ['key' => 'source', 'value' => 'گجت نیوز'],
+                            ['key' => 'source_url', 'value' => $link]
+                        ],
+                        /*'terms' => array('category' => [35])*/
+                    ]);
+
+                    if ($article_id > $setting->getValue()) {
+                        $setting->setValue($article_id);
+                    }
                 }
 
             }

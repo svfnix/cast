@@ -20,6 +20,13 @@ class MinerDigimagCommand extends ContainerAwareCommand
         ;
     }
 
+    private function clean($content){
+
+        $content = $this->clearContent($content);
+
+        return $content;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln("Start crawling ...");
@@ -70,7 +77,7 @@ class MinerDigimagCommand extends ContainerAwareCommand
 
                 $tags = implode(',', $tags);
 
-                $article = new Article();
+                /*$article = new Article();
                 $article->setTitle($title);
                 $article->setContent($content);
                 $article->setImage($image);
@@ -78,10 +85,41 @@ class MinerDigimagCommand extends ContainerAwareCommand
                 $article->setTags($tags);
 
                 $em->persist($article);
-                $em->flush();
+                $em->flush();*/
 
-                if ($article_id > $setting->getValue()) {
-                    $setting->setValue($article_id);
+                $client = new Wordpress(
+                    $this->getContainer()->getParameter('blog_xmlrpc'),
+                    $this->getContainer()->getParameter('blog_user'),
+                    $this->getContainer()->getParameter('blog_pass')
+                );
+
+                $file_name = $this->getRoot() . '/var/cache/digimag.img';
+                file_put_contents($file_name, file_get_contents($image));
+                if (in_array(exif_imagetype($file_name), [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG])){
+
+                    $media = $client->uploadFile(
+                        'digimag-' . time() . '-' . basename($image),
+                        mime_content_type($file_name),
+                        file_get_contents($file_name),
+                        true
+                    );
+
+                    $client->newPost($title, $content, [
+                        'post_status' => 'publish',
+                        'post_excerpt' => $summery,
+                        'tags_input' => $tags,
+                        'post_thumbnail' => $media['id'],
+                        'custom_fields' => [
+                            ['key' => '_bunyad_featured_post', 'value' => '1'],
+                            ['key' => 'source', 'value' => 'دیجیمگ'],
+                            ['key' => 'source_url', 'value' => $link]
+                        ],
+                        'terms' => array('category' => [35])
+                    ]);
+
+                    if ($article_id > $setting->getValue()) {
+                        $setting->setValue($article_id);
+                    }
                 }
             }
 

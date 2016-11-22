@@ -41,6 +41,9 @@ class MinerZoomitCommand extends AppCommand
                 }, $content);
         }
 
+
+        $content = preg_replace('#<div.*?مقالات مرتبط.*?</div>#', '', $content);
+
         return $content;
     }
 
@@ -82,7 +85,6 @@ class MinerZoomitCommand extends AppCommand
                     $summery = $crawler->filter('.article-summery')->first()->text();
 
                     $content = $crawler->filter('.article-section')->first()->html();
-                    $content = preg_replace('#<div.*?مقالات مرتبط.*?</div>#', '', $content);
                     $content = $this->clean($content);
 
                     $tags = [];

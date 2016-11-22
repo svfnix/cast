@@ -84,7 +84,7 @@ class MinerDigiatoCommand extends AppCommand
                 if (in_array(exif_imagetype($file_name), [IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG])) {
 
                     $media = $client->uploadFile(
-                        'zoomit-' . time() . '-' . basename($image),
+                        'digiato-' . time() . '-' . basename($image),
                         mime_content_type($file_name),
                         file_get_contents($file_name),
                         true
