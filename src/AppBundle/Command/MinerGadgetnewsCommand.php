@@ -3,12 +3,14 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\Article;
+use AppBundle\Wrapper\Wordpress;
 use Goutte\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 class MinerGadgetnewsCommand extends ContainerAwareCommand
 {
@@ -85,7 +87,7 @@ class MinerGadgetnewsCommand extends ContainerAwareCommand
                 $client = new Client();
                 $crawler = $client->request('GET', $link);
                 $summery = $crawler->filter('.entry')->filter('p')->first()->text();
-                
+
                 $content = $crawler->filter('.entry')->first()->html();
                 $content = $this->clean($content);
 
