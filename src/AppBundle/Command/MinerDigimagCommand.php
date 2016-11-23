@@ -63,15 +63,15 @@ class MinerDigimagCommand extends AppCommand
 
                 $summery = null;
                 $html = [];
-                $content->filter('p')->each(function($p, $i) use($output, &$html, &$summery){
+                $content->children()->each(function($tag, $i) use($output, &$html, &$summery){
 
                     if(empty($summery)){
-                        $summery = $p->text();
+                        $summery = $tag->text();
                     }
 
-                    $p = $p->html();
-                    if(strpos($p, 'dkmag') === false) {
-                        $html[] = $p;
+                    $tag = $tag->html();
+                    if(strpos($tag, 'dkmag') === false) {
+                        $html[] = $tag;
                     } else {
                         $summery = null;
                     }
