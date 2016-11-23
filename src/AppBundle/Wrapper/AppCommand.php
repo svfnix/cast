@@ -80,6 +80,8 @@ class AppCommand extends ContainerAwareCommand
             foreach($filter_href as $href){
                 if(strpos($link[2], $href) != false){
                     return $link[3];
+                } else {
+                    return '<a href="'.$link[3].'" target="_blank" rel="nofollow">'.$link[3].'</a>';
                 }
             }
         }, $content);
