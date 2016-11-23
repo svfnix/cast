@@ -2,6 +2,8 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Wrapper\AppCommand;
+use AppBundle\Wrapper\Wordpress;
 use Goutte\Client;
 use AppBundle\Entity\Article;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -10,7 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MinerDigimagCommand extends ContainerAwareCommand
+class MinerDigimagCommand extends AppCommand
 {
     protected function configure()
     {
@@ -22,7 +24,7 @@ class MinerDigimagCommand extends ContainerAwareCommand
 
     private function clean($content){
 
-        $content = $this->clearContent($content);
+        $content = $this->clearContent($content, ['digikala.com']);
 
         return $content;
     }
@@ -59,16 +61,27 @@ class MinerDigimagCommand extends ContainerAwareCommand
 
                 $image = $content->filter('.attachment-post-thumbnail')->first()->attr('data-lazy-src');
 
+                $summery = null;
                 $html = [];
-                $content->filter('p')->each(function($p, $i) use($output, &$html){
-                    $html[] = $p->html();
+                $content->filter('p')->each(function($p, $i) use($output, &$html, &$summery){
+
+                    if(empty($summery)){
+                        $summery = $p->text();
+                    }
+
+                    $p = $p->html();
+                    if(strpos($p, 'dkmag') === false) {
+                        $html[] = $p;
+                    } else {
+                        $summery = null;
+                    }
                 });
 
                 $content = implode("\n", $html);
                 $content = preg_replace_callback('/<img.*?data-lazy-src="([^"]+)"[^>]+>/Si', function($image){
                     return '<img src="'.$image[1].'"/>';
                 }, $content);
-
+                $content = $this->clean($content);
 
                 $tags = [];
                 $crawler->filter('.post-tags')->filter('a')->each(function($a) use(&$tags){
@@ -114,7 +127,7 @@ class MinerDigimagCommand extends ContainerAwareCommand
                             ['key' => 'source', 'value' => 'دیجیمگ'],
                             ['key' => 'source_url', 'value' => $link]
                         ],
-                        'terms' => array('category' => [35])
+                        //'terms' => array('category' => [35])
                     ]);
 
                     if ($article_id > $setting->getValue()) {
@@ -127,8 +140,8 @@ class MinerDigimagCommand extends ContainerAwareCommand
 
         $output->writeln("finished.");
 
-        $em->merge($setting);
-        $em->flush();
+        /*$em->merge($setting);
+        $em->flush();*/
     }
 
 }

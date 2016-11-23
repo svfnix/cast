@@ -25,7 +25,7 @@ class MinerZoomitCommand extends AppCommand
 
     private function clean($content){
 
-        $content = $this->clearContent($content);
+        $content = $this->clearContent($content, ['zoomit.ir']);
 
         if (!empty($content)) {
             $content = preg_replace_callback(

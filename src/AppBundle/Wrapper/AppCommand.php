@@ -40,47 +40,6 @@ class AppCommand extends ContainerAwareCommand
         return dirname($this->getContainer()->get('kernel')->getRootDir());
     }
 
-    protected function getEmailAddress()
-    {
-        return 'boostani1988@gmail.com';
-    }
-
-    protected function getRandomEmailAddress($uname)
-    {
-        $rand = rand(0, 9);
-        switch ($rand){
-            case 0:
-                return "{$uname}@tgdir.ir";
-                break;
-            case 1:
-                return "{$uname}@telechannels.ir";
-                break;
-            case 2:
-                return "{$uname}@tgchannels.ir";
-                break;
-            case 3:
-                return "{$uname}@tfgo.ir";
-                break;
-            case 4:
-                return "{$uname}@nikpikst.ir";
-                break;
-            case 5:
-                return "{$uname}@telegram-stickers.ir";
-                break;
-            case 6:
-                return "{$uname}@sticker-download.ir";
-                break;
-            case 7:
-                return "{$uname}@channels-list.ir";
-                break;
-            case 8:
-                return "{$uname}@telegroup.ir";
-                break;
-            case 9:
-                return "{$uname}@telegroups.ir";
-        }
-    }
-
     protected function exportCaptcha($captcha, $name='captcha.png'){
         file_put_contents("/var/www/html/{$name}", $captcha);
     }
@@ -115,11 +74,18 @@ class AppCommand extends ContainerAwareCommand
         }
     }
 
-    protected function clearContent($content){
+    protected function clearContent($content, $filter_href=[]){
 
-        $content = preg_replace('#<a.*?>(.*?)</a>#i', '\1', $content);
-        $content = preg_replace_callback('/<img.*?src="([^"]+)"[^>]+>/Si', function($image){
-            return '<img src="'.$image[1].'" style="max-width:100%" />';
+        $content = preg_replace_callback('/<a.*?href=([\'"])(.*?)\\1[^>]*>(.*?)<\/a>/Si', function($link) use($filter_href){
+            foreach($filter_href as $href){
+                if(strpos($link[2], $href) != false){
+                    return $link[3];
+                }
+            }
+        }, $content);
+
+        $content = preg_replace_callback('/<img.*?src=([\'"])([^"]+)\\1[^>]+>/si', function($image){
+            return '<img src="'.$image[2].'" style="max-width:100%" />';
         }, $content);
 
         return $content;

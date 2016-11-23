@@ -22,6 +22,13 @@ class MinerDigiatoCommand extends AppCommand
         ;
     }
 
+    private function clean($content){
+
+        $content = $this->clearContent($content, ['digiato.com']);
+
+        return $content;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln("Start crawling ...");
@@ -53,7 +60,7 @@ class MinerDigiatoCommand extends AppCommand
                 $crawler = $client->request('GET', $link);
 
                 $content = $crawler->filter('.article-content')->first()->html();
-                $content = $this->clearContent($content);
+                $content = $this->clean($content);
 
                 $summery = $crawler->filter('.article-content')->filter('p')->first()->text();
 

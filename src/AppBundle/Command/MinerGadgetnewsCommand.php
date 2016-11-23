@@ -25,7 +25,7 @@ class MinerGadgetnewsCommand extends AppCommand
 
     private function clean($content){
 
-        $content = $this->clearContent($content);
+        $content = $this->clearContent($content, ['gadgetnews.ir']);
 
         if (!empty($content)) {
 
