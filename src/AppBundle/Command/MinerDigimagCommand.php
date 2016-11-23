@@ -59,27 +59,32 @@ class MinerDigimagCommand extends AppCommand
                 $crawler = $client->request('GET', $link);
                 $content = $crawler->filter('.post-body')->first();
 
+                $media = $content->html();
+                if(strpos($media, 'media-player')){
+                    return false;
+                }
+
                 $image = $content->filter('.attachment-post-thumbnail')->first()->attr('data-lazy-src');
 
                 $summery = null;
                 $html = [];
-                $content->children()->each(function($tag, $i) use($output, &$html, &$summery){
+                $content->filter('p')->each(function($p, $i) use($output, &$html, &$summery){
 
                     if(empty($summery)){
-                        $summery = $tag->text();
+                        $summery = $p->text();
                     }
 
-                    $tag = $tag->html();
-                    if(strpos($tag, 'dkmag') === false) {
-                        $html[] = $tag;
+                    $p = $p->html();
+                    if(strpos($p, 'dkmag') === false) {
+                        $html[] = $p;
                     } else {
                         $summery = null;
                     }
                 });
 
                 $content = implode("\n", $html);
-                $content = preg_replace_callback('/<img.*?data-lazy-src="([^"]+)"[^>]+>/Si', function($image){
-                    return '<img src="'.$image[1].'"/>';
+                $content = preg_replace_callback('/<img.*?data-lazy-src=(\'")(.*)\\1[^>]+>/si', function($image){
+                    return '<img src="'.$image[2].'"/>';
                 }, $content);
                 $content = $this->clean($content);
 
