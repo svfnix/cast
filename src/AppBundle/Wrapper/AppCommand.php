@@ -81,7 +81,7 @@ class AppCommand extends ContainerAwareCommand
                 if(strpos($link[2], $href) != false){
                     return $link[3];
                 } else {
-                    return '<a href="'.$link[3].'" target="_blank" rel="nofollow">'.$link[3].'</a>';
+                    return '<a href="'.$link[2].'" target="_blank" rel="nofollow">'.$link[3].'</a>';
                 }
             }
         }, $content);
