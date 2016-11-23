@@ -145,8 +145,8 @@ class MinerDigimagCommand extends AppCommand
 
         $output->writeln("finished.");
 
-        /*$em->merge($setting);
-        $em->flush();*/
+        $em->merge($setting);
+        $em->flush();
     }
 
 }
